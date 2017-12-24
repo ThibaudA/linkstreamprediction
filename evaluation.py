@@ -41,20 +41,6 @@ class evaluate:
             sys.stderr.write(str(self._TP) + " \n")
             sys.stderr.write(str(self._FP) + " \n")
             sys.stderr.write(str(self._FN) + " \n")
-                #
-                # if sc._ranks[link] >=1:
-            	# 	ev._TP+=1.
-            	# 	if not times.has_key(link):
-            	# 		evnewlink._TP+=1
-            	# 	else:
-        		# 		evrecurent._TP += sc._ranks[link]
-        		# elif sc._ranks[link] > 0:
-        		# 	ev._TP += sc._ranks[link]
-        		# 	if not times.has_key(link):
-        		# 		evnewlink._TP += sc._ranks[link]
-        		# 	else:
-        		# 		evrecurent._TP += sc._ranks[link]
-        		# sc._ranks[link]=sc._ranks[link]-1.
 
 
 
@@ -83,44 +69,7 @@ class evaluate:
             sys.stderr.write(str(self._TP) + " \n")
             sys.stderr.write(str(self._FP) + " \n")
             sys.stderr.write(str(self._FN) + " \n")
-                #
-                # if sc._ranks[link] >=1:
-            	# 	ev._TP+=1.
-            	# 	if not times.has_key(link):
-            	# 		evnewlink._TP+=1
-            	# 	else:
-        		# 		evrecurent._TP += sc._ranks[link]
-        		# elif sc._ranks[link] > 0:
-        		# 	ev._TP += sc._ranks[link]
-        		# 	if not times.has_key(link):
-        		# 		evnewlink._TP += sc._ranks[link]
-        		# 	else:
-        		# 		evrecurent._TP += sc._ranks[link]
-        		# sc._ranks[link]=sc._ranks[link]-1.
 
-    def updateScore(self, t_pred, t_obs,lambd):
-            self.updateTP(t_pred, t_obs,lambd)
-            self.updateFP(t_pred, t_obs,lambd)
-            self.updateFN(t_pred, t_obs,lambd)
-
-
-    def updateTP(self, t_pred, t_obs,lambd):
-            self._TP = self._TP + np.tanh(1.0/(lambd*(abs(t_pred-t_obs))))
-
-    def updateFN(self, t_pred, t_obs,lambd):
-        if t_pred-t_obs > 0 :
-            self._FN = self._FN + 1-np.tanh(1.0/(lambd*(t_pred-t_obs)))
-
-    def updateFP(self, t_pred, t_obs,lambd):
-        if t_pred-t_obs < 0 :
-            self._FP = self._FP + 1-np.tanh(1.0/(-lambd*(t_pred-t_obs)))
-
-    def updateTN(self, t_pred, t_obs,lambd):
-        if t_pred-t_obs < 0 :
-            self._TN = self._TN + 1-np.tanh(1.0/(-lambd*(t_pred-t_obs)))
-
-    def endScore(self, t_pred, t_obs,lambd):
-            self.updateTN(t_pred, t_obs,lambd)
 
     def printeval(self):
         sys.stdout.write("TP " + str(self._TP) + " \n")
@@ -149,14 +98,3 @@ class evaluate:
             table.write(s + "\n")
         # print(self._TP,self._FN,self._FP)
         table.close()
-
-
-
-
-    def CumulTp(self,ranks,times):
-        data=[]
-
-        for link in ranks:
-            if link in times:
-                data.append(min(ranks[link],len(times[link])))
-        return data

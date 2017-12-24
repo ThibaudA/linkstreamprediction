@@ -13,7 +13,6 @@ class score:
     def __init__(self):
         self._pair_set = set()
         self._pair = dict()
-        self._opperator = str()
         self._ranks = dict()
         self._maxByMetric = dict()
 
@@ -42,15 +41,6 @@ class score:
     def addGaussian(self,c,var,mean,last,alpha):
         self._pair[c]["gaussian"]=(var,mean,last,alpha)
 
-    # def rankPairs(self,t):
-    #     for c in self._pair:
-    #         off = self._pair[c]["offset"]
-    #         if self._pair[c].has_key("gaussian"):
-    #             amp, var, mean, last = self._pair[c]["gaussian"]
-    #         else:
-    #             amp, var, mean, last = 0,1,1,1
-    #         self._ranks[c]=(off + amp*np.exp(-pow((t-last)%(2*mean)-mean,2)/(2*var*var)))
-    #     self._ranks =sorted(ranks.items(), key=operator.itemgetter(1), reverse=True)
 
     def integrateMetrics(self,t1,t2): #using the function from metrics integrate
         for c in self._pair:

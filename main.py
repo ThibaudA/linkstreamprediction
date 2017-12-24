@@ -12,11 +12,8 @@ import os
 # nodes = dict() # observation
 times = dict() # observation
 predtimes=dict()
-N=1000. #nb of point for small plot function
 metrics= metrics()
-freq=0
-linkbyarea=0
-
+Extract =False
 if len(sys.argv)!=2:
 	sys.stderr.write("0  #start time of TrainingObservation \n")
 	sys.stderr.write("100 #end time of TrainingObservation\n")
@@ -33,9 +30,6 @@ if len(sys.argv)!=2:
 	sys.stderr.write("Metrics #Metrics used\n")
 	sys.stderr.write("intercontactTimes\n")
 	sys.stderr.write("commonNeighbors\n\n")
-
-	sys.stderr.write("Opp\n")
-	sys.stderr.write("+ #operator used\n \n")
 
 	sys.stderr.write("Commentaries:\n")
 
@@ -60,7 +54,7 @@ else:
 	sys.stderr.write(conf.readline().split("#")[0].strip(" ") + ":\n")
 	while MetricsOK != True:
 		line = conf.readline()
-		if line != "Opperator used:\n":
+		if line != "EndMetrics\n":
 			if len(line.split(" "))!=1: # if one or more parameter
 				metrics._confmetrics[line.split(" ")[0]]=list(map(float,line.rstrip("\n").split(" ")[1].split(",")))
 			else:
@@ -68,20 +62,18 @@ else:
 		else:
 			MetricsOK=True
 sys.stderr.write(str(metrics._confmetrics)+"\n")
-sc._opperator= conf.readline().split(" ")[0].rstrip("\n")
-line = conf.readline().split(" ")
-if line[0].rstrip("\n") == "Extract":
-	ExtractDirectory=line[1].rstrip("\n")
-	Extract = True
-	print(ExtractDirectory)
-	dir = os.path.dirname(ExtractDirectory+"/")
-	try:
-	    os.stat(dir)
-	except:
-	    os.mkdir(dir)
+while line !="Commentaries:\n":
+	line = conf.readline()
+	if line.split(" ")[0].rstrip("\n") == "Extract":
+		ExtractDirectory=line.split(" ")[1].rstrip("\n")
+		Extract = True
+		print(ExtractDirectory)
+		dir = os.path.dirname(ExtractDirectory+"/")
+		try:
+			os.stat(dir)
+		except:
+			os.mkdir(dir)
 
-sys.stdout.write("Operator: "+str(sc._opperator)+"\n")
-# print "t=",t,"\ntmesure=", tmesure,"\nT=",T,"\nn=",n
 
 sys.stdout.write("tstartobsT: "+str(tstartobsT)+"\n")
 sys.stdout.write("tendobsT: "+str(tendobsT)+"\n")
@@ -113,7 +105,6 @@ while t<tendpred:
 		link= frozenset([u,v])
 		if not link in times:
 			times[link] = []
-		#sc.addPair(link)
 		times[link].append(t)
 
 	if tstartpred<=t<tendpred:
@@ -153,9 +144,7 @@ for link in obstimes:
 	if v not in obsnodes:
 		obsnodes[v]=set()
 	obsnodes[u].add(v)
-	# print(obsnodes[v])
 	obsnodes[v].add(u)
-	# print(obsnodes[v])
 	nb_linksOBS1 = nb_linksOBS1 + len([x for x in obstimes[link] if x>=tstartobsT and x<(tendobsT+tstartobsT)/2])
 	nb_linksOBS2 = nb_linksOBS2 + len([x for x in obstimes[link] if x>=(tendobsT+tstartobsT)/2 and x<tendobsT])
 	nb_linksOBS=nb_linksOBS1+nb_linksOBS2
@@ -247,41 +236,15 @@ scPLUS.normalizeMetrics()
 #Triche
 n= nb_linksTRAINING
 sys.stdout.write("Nblinks predicted C0 "+str(n)+"\n")
-# #Determine the ratio between the classes
-# n1=0
-# n2=0
-# n3=0
-# for link in trainingtimes:
-# 	if link in sc1._pair:
-# 		n1=n1+len(trainingtimes[link])
-# 	if link in sc2._pair:
-# 		n2=n2+len(trainingtimes[link])
-# 	if link in sc3._pair:
-# 		n3=n3+len(trainingtimes[link])
-#
-# ratio1= n1/n
-# ratio2= n2/n
-# ratio3= n3/n
-# sys.stdout.write("Nblinks predicted C1 "+str(n1)+"\n")
-# sys.stdout.write("Nblinks predicted C2 "+str(n2)+"\n")
-# sys.stdout.write("Nblinks predicted C3 "+str(n3)+"\n")
+
 
 # sc.OnePred(tstartobsT,tendobsT,tstartpredT,tendpredT,n,obstimes,trainingtimesaggregated,metrics._confmetrics)
 
-# initconfmetrics = sc.gridsearch(tstartobsT,tendobsT,tstartpredT,tendpredT,n,trainingtimesaggregated,metrics._confmetrics)
-# initconfmetrics1 = sc1.gridsearch(tstartobsT,tendobsT,tstartpredT,tendpredT,n1,trainingtimesaggregated,metrics._confmetrics)
-# initconfmetrics2 = sc2.gridsearch(tstartobsT,tendobsT,tstartpredT,tendpredT,n2,trainingtimesaggregated,metrics._confmetrics)
-# initconfmetrics3 = sc3.gridsearch(tstartobsT,tendobsT,tstartpredT,tendpredT,n3,trainingtimesaggregated,metrics._confmetrics)
-initconfmetrics = sc.randomExplo(tstartobsT,tendobsT,tstartpredT,tendpredT,n,trainingtimesaggregated,metrics._confmetrics,10000)
-# initconfmetrics1 = sc1.randomExplo(tstartobsT,tendobsT,tstartpredT,tendpredT,n1,trainingtimesaggregated,metrics._confmetrics,4000)
-# initconfmetrics2 = sc2.randomExplo(tstartobsT,tendobsT,tstartpredT,tendpredT,n2,trainingtimesaggregated,metrics._confmetrics,4000)
-# initconfmetrics3 = sc3.randomExplo(tstartobsT,tendobsT,tstartpredT,tendpredT,n3,trainingtimesaggregated,metrics._confmetrics,4000)
-initconfmetrics1,initconfmetrics2,initconfmetrics3 = scPLUS.randomExploPLUS(tstartobsT,tendobsT,tstartpredT,tendpredT,n,trainingtimesaggregated,metrics._confmetrics,15000,sc1,sc2,sc3)
+
+initconfmetrics = sc.randomExplo(tstartobsT,tendobsT,tstartpredT,tendpredT,n,trainingtimesaggregated,metrics._confmetrics,10)
+initconfmetrics1,initconfmetrics2,initconfmetrics3 = scPLUS.randomExploPLUS(tstartobsT,tendobsT,tstartpredT,tendpredT,n,trainingtimesaggregated,metrics._confmetrics,15,sc1,sc2,sc3)
 #
-# sys.stderr.write("fin train "+str(initconfmetrics)+" \n \n")
-# sys.stderr.write("fin train C1 "+str(initconfmetrics1)+" \n \n")
-# sys.stderr.write("fin train C2"+str(initconfmetrics2)+" \n \n")
-# sys.stderr.write("fin train C3"+str(initconfmetrics3)+" \n \n")
+
 sys.stderr.write("fin init "+str(initconfmetrics)+" \n")
 sys.stderr.write("fin init C1 "+str(initconfmetrics1)+" \n")
 sys.stderr.write("fin init C2"+str(initconfmetrics2)+" \n")
@@ -294,10 +257,7 @@ numlinexptep = 100
 
 predconfmetric, Finalscore =sc.gradDescentLinExp(tstartobsT,tendobsT,tstartpredT,tendpredT,n,trainingtimesaggregated,initconfmetrics,derstep,sizelinexptep,numlinexptep)
 sys.stderr.write("C0 Done\n")
-# predconfmetric1,Finalscore1=sc1.gradDescentLinExp(tstartobsT,tendobsT,tstartpredT,tendpredT,n1,trainingtimesaggregated,initconfmetrics1,derstep,sizelinexptep,numlinexptep)
-# predconfmetric2,Finalscore2=sc2.gradDescentLinExp(tstartobsT,tendobsT,tstartpredT,tendpredT,n2,trainingtimesaggregated,initconfmetrics2,derstep,sizelinexptep,numlinexptep)
-# predconfmetric3,Finalscore3=sc3.gradDescentLinExp(tstartobsT,tendobsT,tstartpredT,tendpredT,n3,trainingtimesaggregated,initconfmetrics3,derstep,sizelinexptep,numlinexptep)
-predconfmetric1,predconfmetric2,predconfmetric3,FinalscorePLUS,Finalscore1,Finalscore2,Finalscore3=scPLUS.gradDescentLinExpPLUS(tstartobsT,tendobsT,tstartpredT,tendpredT,n,trainingtimesaggregated,initconfmetrics1,initconfmetrics2,initconfmetrics3,derstep,sizelinexptep,numlinexptep,1000,sc1,sc2,sc3)
+predconfmetric1,predconfmetric2,predconfmetric3,FinalscorePLUS,Finalscore1,Finalscore2,Finalscore3=scPLUS.gradDescentLinExpPLUS(tstartobsT,tendobsT,tstartpredT,tendpredT,n,trainingtimesaggregated,initconfmetrics1,initconfmetrics2,initconfmetrics3,derstep,sizelinexptep,numlinexptep,10,sc1,sc2,sc3)
 sys.stderr.write("C123 Done\n")
 
 if Extract:
@@ -306,8 +266,6 @@ if Extract:
 	sc1.extractPrediction(ExtractDirectory+ "/ExtractPredC1")
 	sc2.extractPrediction(ExtractDirectory+ "/ExtractPredC2")
 	sc3.extractPrediction(ExtractDirectory+ "/ExtractPredC3")
-
-
 
 
 nb_linksPredictedC01,nb_linksPredictedC02,nb_linksPredictedC03=0,0,0
@@ -368,7 +326,6 @@ sys.stdout.write("C3: \n")
 Finalscore3.printeval()
 
 
-#sys.stderr.write("\nInit " +str(initconfmetrics)+" "+ str(MFscore)+"\n")
 sys.stderr.write("fin train "+str(predconfmetric)+" "+str(Finalscore._F)+"\n \n")
 sys.stderr.write("fin train C1 "+str(predconfmetric1)+" "+str(Finalscore1._F)+"\n \n")
 sys.stderr.write("fin train C2"+str(predconfmetric2)+" "+str(Finalscore2._F)+"\n \n")
@@ -458,9 +415,6 @@ scPLUS.normalizeMetrics()
 n=metrics.linearActivityExtrapolation(nb_linksOBS,tstartobs,tendobs,tstartpred,tendpred)
 # n=nb_linksPRED
 #n=metrics.twopointrActivityExtrapolation(nb_linksOBS1,nb_linksOBS2,tstartobs,(tstartobs+tendobs)/2,tendobs,tstartpred,tendpred)
-# n1=ratio1*n
-# n2=ratio2*n
-# n3=ratio3*n
 
 
 
@@ -474,7 +428,6 @@ scPLUS.normalizeranksbyintegral(n)
 
 sys.stdout.write("PREDICTION\n")
 sys.stdout.write("Nblinks OBS "+str(nb_linksOBS)+"\n")
-#print("Nblinks TRAINING : "+str(nb_linksTRAINING))
 sys.stdout.write("Nblinks PRED C0 "+str(nb_linksPRED)+"\n")
 nb_linksPREDC1,nb_linksPREDC2,nb_linksPREDC3=0,0,0
 
@@ -533,37 +486,33 @@ sys.stdout.write("C0{\n")
 for item in sorted(predconfmetric.items(),key=itemgetter(1),reverse=True):
 
 	sys.stdout.write(str(item[0])+" "+ str(item[1])+"\n")
-sys.stdout.write("}\n")#sc.traceScorehistogram(50)
+sys.stdout.write("}\n")
 
 sys.stdout.write("C1{\n")
 
 for item in sorted(predconfmetric1.items(),key=itemgetter(1),reverse=True):
 
 	sys.stdout.write(str(item[0])+" "+ str(item[1])+"\n")
-sys.stdout.write("}\n")#sc.traceScorehistogram(50)
+sys.stdout.write("}\n")
 
 sys.stdout.write("C2{\n")
 
 for item in sorted(predconfmetric2.items(),key=itemgetter(1),reverse=True):
 
 	sys.stdout.write(str(item[0])+" "+ str(item[1])+"\n")
-sys.stdout.write("}\n")#sc.traceScorehistogram(50)
+sys.stdout.write("}\n")
 
 sys.stdout.write("C3{\n")
 
 for item in sorted(predconfmetric3.items(),key=itemgetter(1),reverse=True):
 
 	sys.stdout.write(str(item[0])+" "+ str(item[1])+"\n")
-sys.stdout.write("}\n")#sc.traceScorehistogram(50)
+sys.stdout.write("}\n")
 
 ev = evaluate()
 ev01 = evaluate()
 ev02 = evaluate()
 ev03 = evaluate()
-# ev.calculateScore(sc._ranks,predtimes)
-# ev01.calculateScore({x:sc._ranks[x] for x in sc1._ranks},predtimes)
-# ev02.calculateScore({x:sc._ranks[x] for x in sc2._ranks},predtimes)
-# ev03.calculateScore({x:sc._ranks[x] for x in sc3._ranks},predtimes)
 
 ev.calculateScoreFromTimeAggreg(sc._ranks,predtimesaggregated)
 ev01.calculateScoreFromTimeAggreg({x:sc._ranks[x] for x in sc1._ranks},predtimesaggregated)
@@ -591,9 +540,6 @@ ev1 = evaluate()
 ev2 = evaluate()
 ev3 = evaluate()
 
-# ev1.calculateScore({x:scPLUS._ranks[x] for x in sc1._ranks},predtimes)
-# ev2.calculateScore({x:scPLUS._ranks[x] for x in sc2._ranks},predtimes)
-# ev3.calculateScore({x:scPLUS._ranks[x] for x in sc3._ranks},predtimes)
 
 ev1.calculateScoreFromTimeAggreg({x:scPLUS._ranks[x] for x in sc1._ranks},predtimesaggregated)
 ev2.calculateScoreFromTimeAggreg({x:scPLUS._ranks[x] for x in sc2._ranks},predtimesaggregated)
@@ -609,48 +555,20 @@ sys.stdout.write("C3:\n")
 ev3.printeval()
 
 
-# subC1=ev1.CumulTp({x:scPLUS._ranks[x] for x in sc1._ranks},predtimes)
-# plt.subplot(4, 2, 1)
-# n, bins, patches= plt.hist(subC1,50, histtype='step',cumulative=True)
-# plt.title("C1")
-#
-# subC2=ev2.CumulTp({x:scPLUS._ranks[x] for x in sc2._ranks},predtimes)
-# plt.subplot(4, 2, 3)
-# n, bins, patches= plt.hist(subC2,50, histtype='step',cumulative=True)
-# plt.title("C2")
-#
-# subC3=ev3.CumulTp({x:scPLUS._ranks[x] for x in sc3._ranks},predtimes)
-# plt.subplot(4, 2, 5)
-# n, bins, patches= plt.hist(subC3,50, histtype='step',cumulative=True)
-# plt.title("C3")
-#
-# subPLUS=evPLUS.CumulTp(Mergeranks,predtimes)
-# plt.subplot(4, 2, 7)
-# n, bins, patches= plt.hist(subPLUS,50, histtype='step',cumulative=True)
-# plt.title("PLUS")
-#
-# subC01=ev01.CumulTp({x:sc._ranks[x] for x in sc1._ranks},predtimes)
-# plt.subplot(4, 2, 2)
-# n, bins, patches= plt.hist(subC01,50, histtype='step',cumulative=True)
-# plt.title("C01")
-#
-# subC02=ev1.CumulTp({x:sc._ranks[x] for x in sc2._ranks},predtimes)
-# plt.subplot(4, 2, 4)
-# n, bins, patches= plt.hist(subC02,50, histtype='step',cumulative=True)
-# plt.title("C02")
-#
-# subC03=ev1.CumulTp({x:sc._ranks[x] for x in sc3._ranks},predtimes)
-# plt.subplot(4, 2, 6)
-# n, bins, patches= plt.hist(subC03,50, histtype='step',cumulative=True)
-# plt.title("C03")
-#
-# subC0=ev.CumulTp(sc._ranks,predtimes)
-# plt.subplot(4, 2, 8)
-# n, bins, patches= plt.hist(subC0,50, histtype='step',cumulative=True)
-# plt.title("C0")
-#
-#
-# plt.show()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
