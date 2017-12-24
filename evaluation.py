@@ -75,7 +75,6 @@ class evaluate:
         sys.stdout.write("TP " + str(self._TP) + " \n")
         sys.stdout.write("FP " + str(self._FP) + " \n")
         sys.stdout.write("FN " + str(self._FN) + " \n")
-        # sys.stdout.write("TN " + str(self._TN) + " \n")
 
         sys.stdout.write("Precision " + str(self._Pr) + " \n")
         sys.stdout.write("Recall "    + str(self._Rc) + " \n")
@@ -90,11 +89,9 @@ class evaluate:
                 table.write(str(u) + " ")
             s=""
             if link in times:
-                # s=s+str(min(ranks[link],len(times[link])))+","+str(-)max(ranks[link]-len(times[link]),0.))+","+str(max(len(times[link])-ranks[link],0.))
                 s=s+str(min(ranks[link],len(times[link])))+","+str(max(ranks[link]-len(times[link]),0.))+","+str(max(len(times[link])-ranks[link],0.))
             else:
                 s="0,"+ str(ranks[link])+",0"
 
             table.write(s + "\n")
-        # print(self._TP,self._FN,self._FP)
         table.close()

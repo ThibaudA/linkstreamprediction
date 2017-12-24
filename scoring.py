@@ -17,7 +17,6 @@ class score:
         self._maxByMetric = dict()
 
 
-
     def addPair(self,c):
         if not c in self._pair_set:
             self._pair[c]=dict()
@@ -33,13 +32,6 @@ class score:
 
     def addFunction(self,c,name,fct):
 	       self._pair[c][name]=fct
-
-    def addOffSet(self,c,off):
-        if off !=0:
-            self._pair[c]["offset"]+=off
-
-    def addGaussian(self,c,var,mean,last,alpha):
-        self._pair[c]["gaussian"]=(var,mean,last,alpha)
 
 
     def integrateMetrics(self,t1,t2): #using the function from metrics integrate
@@ -60,7 +52,6 @@ class score:
         for c in self._pair:
             for ID in self._pair[c]:
                 #normalize each metric with the max for the metric
-                # print(ID,self._pair[c][ID],self._maxByMetric[ID])
                 if self._maxByMetric[ID]!=0:
                     self._pair[c][ID]=self._pair[c][ID]/self._maxByMetric[ID]
         for ID in self._maxByMetric:
@@ -69,8 +60,6 @@ class score:
 
 
     def normalizeranksbyintegral(self,linksinT):
-        #print float(nb_lines),self._T,float(tmesure-tstart)
-        #linksinT = float(nb_lines)*(tendpred-tstartpred)/float(tmesure-tstart)
         sumarea=0.
         for r in self._ranks: #nb of link for each unit of area (from integrate)
             sumarea= sumarea+self._ranks[r]
@@ -78,27 +67,10 @@ class score:
             linkbyarea = linksinT / sumarea
         else:
             linkbyarea = 0
-        # normranks=[]
         hist=[]
         sumpredlink=0
-        # print type(self._ranks)
         for r in self._ranks:
-            # normranks.append((r[0],r[1]*linkbyarea))
-            # print self._ranks[i][0],self._ranks[i][1]
             self._ranks[r]=self._ranks[r]*linkbyarea
-            # print self._ranks[r]
-
-            # if self._ranks[r]>=0.5:
-            #     hist.append(self._ranks[r])
-        # for r in hist:
-        # print freq*self._T
-        # print sumpredlink
-        # print hist[0]
-        # numb, bins, patches = plt.hist(hist, bins=200,cumulative=False)
-        # plt.yscale("log")
-        # plt.xlabel("Number of predicted links")
-        # plt.show()
-        #return linksinT
 
     def rankPairs(self,t1,t2,confmetrics):
         #print self._pair
@@ -111,8 +83,6 @@ class score:
                 else:
                     self._ranks[c] += self._pair[c][ID]
 
-            #print ranks[c]
-        # self._ranks =sorted(self._ranks.items(), key=operator.itemgette
 
     def gridsearch(self,tstart,tend,tmesure,tendtraining,nb_links,trainingtimes,confmetrics):
         MFscore=-1.
@@ -129,7 +99,6 @@ class score:
             if cptcalcul%200 == 0:
                 sys.stderr.write(str(cptcalcul)+ "/"+str(nbcalcul)+ " \n")
 
-
             if not allnull:
 
                 self.rankPairs(tstart,tend,runmetrics) #compute combinaison
@@ -138,7 +107,6 @@ class score:
                 ev = evaluate()
 
                 ev.calculateScoreFromTimeAggreg(self._ranks,trainingtimes)
-                # ev.calculateScore(self._ranks,trainingtimes)
 
                 if ev._F >= MFscore:
                     MFscore = ev._F
@@ -205,7 +173,6 @@ class score:
                 ev = evaluate()
 
                 ev.calculateScoreFromTimeAggreg(self._ranks,trainingtimes)
-                # ev.calculateScore(self._ranks,trainingtimes)
 
                 if ev._F >= MFscore:
                     MFscore = ev._F
@@ -253,9 +220,6 @@ class score:
                 ev1 = evaluate()
                 ev2 = evaluate()
                 ev3 = evaluate()
-                # ev1.calculateScore({x:self._ranks[x] for x in sc1._ranks},trainingtimes)
-                # ev2.calculateScore({x:self._ranks[x] for x in sc2._ranks},trainingtimes)
-                # ev3.calculateScore({x:self._ranks[x] for x in sc3._ranks},trainingtimes)
                 ev1.calculateScoreFromTimeAggreg({x:self._ranks[x] for x in sc1._ranks},trainingtimes)
                 ev2.calculateScoreFromTimeAggreg({x:self._ranks[x] for x in sc2._ranks},trainingtimes)
                 ev3.calculateScoreFromTimeAggreg({x:self._ranks[x] for x in sc3._ranks},trainingtimes)
@@ -299,7 +263,6 @@ class score:
                 n=self.normalizeranksbyintegral(nb_links,tend,tstart)
                 ev = evaluate()
                 ev.calculateScoreFromTimeAggreg(self._ranks,testtimes)
-                # ev.calculateScore(self._ranks,testtimes)
 
                 Fplus=ev._F
 
@@ -307,14 +270,11 @@ class score:
                 self.rankPairs(tpred,tpred+T,derivconfmetrics)
                 n=self.normalizeranksbyintegral(nb_links,tend,tstart)
                 ev = evaluate()
-                # ev.calculateScore(self._ranks,testtimes)
                 ev.calculateScoreFromTimeAggreg(self._ranks,testtimes)
 
                 Fminus=ev._F
-                #print(Fplus-Fminus)
 
                 iterconfmetrics[metric] = confmetrics[metric] + float(step)*(Fplus-Fminus)/(2*float(derstep))
-                #print(float(step)*(Fplus-Fminus)/(2*float(derstep)))
                 derivconfmetrics = confmetrics.copy()
 
             confmetrics=iterconfmetrics.copy()
@@ -324,9 +284,7 @@ class score:
             n=self.normalizeranksbyintegral(nb_links,tend,tstart)
             ev = evaluate()
             ev.calculateScoreFromTimeAggreg(self._ranks,testtimes)
-            # ev.calculateScore(self._ranks,testtimes)
 
-            #print(confmetrics)
             print(confmetrics)
             print("Test",ev._F)
 
@@ -335,10 +293,7 @@ class score:
         self.normalizeranksbyintegral(nb_links)
         ev = evaluate()
         ev.calculateScoreFromTimeAggreg(self._ranks,trainingtimes)
-        # ev.calculateScore(self._ranks,trainingtimes)
 
-        #ev.printeval()
-        #print(init)
         confmetrics=init.copy()
         derivconfmetrics = init.copy()
         iterconfmetrics = init.copy()
@@ -357,7 +312,6 @@ class score:
                 self.normalizeranksbyintegral(nb_links)
                 ev = evaluate()
                 ev.calculateScoreFromTimeAggreg(self._ranks,trainingtimes)
-                # ev.calculateScore(self._ranks,trainingtimes)
 
                 Fplus=ev._F
                 #no negative parameters
@@ -369,12 +323,10 @@ class score:
                 self.normalizeranksbyintegral(nb_links)
                 ev = evaluate()
                 ev.calculateScoreFromTimeAggreg(self._ranks,trainingtimes)
-                # ev.calculateScore(self._ranks,trainingtimes)
 
                 Fminus=ev._F
                 #maybe check when parameters<0
                 directmetrics[metric] = (Fplus-Fminus)/(float(derstep)+float(min(confmetrics[metric],derstep)))
-                #print(float(step)*(Fplus-Fminus)/(2*float(derstep)))
                 derivconfmetrics = confmetrics.copy()
             maxev=evaluate()
             maxev._F=0
@@ -392,7 +344,6 @@ class score:
                 self.rankPairs(tmesure,tendtraining,iterconfmetrics)
                 self.normalizeranksbyintegral(nb_links)
                 ev = evaluate()
-                # ev.calculateScore(self._ranks,trainingtimes)
                 ev.calculateScoreFromTimeAggreg(self._ranks,trainingtimes)
 
                 if math.floor(ev._F*100000)/100000  > math.floor(maxev._F*100000)/100000 :
@@ -405,9 +356,6 @@ class score:
             confmetrics={metric:maxconfmetrics[metric] for metric in confmetrics}
             derivconfmetrics = confmetrics.copy()
 
-            #print(confmetrics)
-            #print(confmetrics)
-            #print("Test",maxF)
 
             k=k+1
         maxmetric=0
@@ -434,11 +382,8 @@ class score:
         self._ranks=Mergeranks
         self.normalizeranksbyintegral(nb_links)
         ev = evaluate()
-        # ev.calculateScore(self._ranks,trainingtimes)
         ev.calculateScoreFromTimeAggreg(self._ranks,trainingtimes)
 
-        #ev.printeval()
-        #print(init)
         confmetrics1=init1.copy()
         derivconfmetrics1 = init1.copy()
         iterconfmetrics1 = init1.copy()
@@ -476,9 +421,6 @@ class score:
                 ev1.calculateScoreFromTimeAggreg({x:self._ranks[x] for x in sc1._ranks},trainingtimes)
                 ev2.calculateScoreFromTimeAggreg({x:self._ranks[x] for x in sc2._ranks},trainingtimes)
                 ev3.calculateScoreFromTimeAggreg({x:self._ranks[x] for x in sc3._ranks},trainingtimes)
-                # ev1.calculateScore({x:self._ranks[x] for x in sc1._ranks},trainingtimes)
-                # ev2.calculateScore({x:self._ranks[x] for x in sc2._ranks},trainingtimes)
-                # ev3.calculateScore({x:self._ranks[x] for x in sc3._ranks},trainingtimes)
                 meanF = meanFscore(ev1._F,ev2._F,ev3._F)
                 Fplus=meanF
                 #no negative parameters
@@ -501,14 +443,10 @@ class score:
                 ev1.calculateScoreFromTimeAggreg({x:self._ranks[x] for x in sc1._ranks},trainingtimes)
                 ev2.calculateScoreFromTimeAggreg({x:self._ranks[x] for x in sc2._ranks},trainingtimes)
                 ev3.calculateScoreFromTimeAggreg({x:self._ranks[x] for x in sc3._ranks},trainingtimes)
-                # ev1.calculateScore({x:self._ranks[x] for x in sc1._ranks},trainingtimes)
-                # ev2.calculateScore({x:self._ranks[x] for x in sc2._ranks},trainingtimes)
-                # ev3.calculateScore({x:self._ranks[x] for x in sc3._ranks},trainingtimes)
                 meanF = meanFscore(ev1._F,ev2._F,ev3._F)
                 Fminus=meanF
                 #maybe check when parameters<0
                 directmetrics1[metric] = (Fplus-Fminus)/(float(derstep)+float(min(confmetrics1[metric],derstep)))
-                #print(float(step)*(Fplus-Fminus)/(2*float(derstep)))
                 derivconfmetrics1 = confmetrics1.copy()
 
             for metric in confmetrics2:
@@ -528,9 +466,6 @@ class score:
                 ev1.calculateScoreFromTimeAggreg({x:self._ranks[x] for x in sc1._ranks},trainingtimes)
                 ev2.calculateScoreFromTimeAggreg({x:self._ranks[x] for x in sc2._ranks},trainingtimes)
                 ev3.calculateScoreFromTimeAggreg({x:self._ranks[x] for x in sc3._ranks},trainingtimes)
-                # ev1.calculateScore({x:self._ranks[x] for x in sc1._ranks},trainingtimes)
-                # ev2.calculateScore({x:self._ranks[x] for x in sc2._ranks},trainingtimes)
-                # ev3.calculateScore({x:self._ranks[x] for x in sc3._ranks},trainingtimes)
                 meanF = meanFscore(ev1._F,ev2._F,ev3._F)
                 Fplus=meanF
                 #no negative parameters
@@ -553,14 +488,10 @@ class score:
                 ev1.calculateScoreFromTimeAggreg({x:self._ranks[x] for x in sc1._ranks},trainingtimes)
                 ev2.calculateScoreFromTimeAggreg({x:self._ranks[x] for x in sc2._ranks},trainingtimes)
                 ev3.calculateScoreFromTimeAggreg({x:self._ranks[x] for x in sc3._ranks},trainingtimes)
-                # ev1.calculateScore({x:self._ranks[x] for x in sc1._ranks},trainingtimes)
-                # ev2.calculateScore({x:self._ranks[x] for x in sc2._ranks},trainingtimes)
-                # ev3.calculateScore({x:self._ranks[x] for x in sc3._ranks},trainingtimes)
                 meanF = meanFscore(ev1._F,ev2._F,ev3._F)
                 Fminus=meanF
                 #maybe check when parameters<0
                 directmetrics2[metric] = (Fplus-Fminus)/(float(derstep)+float(min(confmetrics2[metric],derstep)))
-                #print(float(step)*(Fplus-Fminus)/(2*float(derstep)))
                 derivconfmetrics2 = confmetrics2.copy()
 
             for metric in confmetrics3:
@@ -580,9 +511,6 @@ class score:
                 ev1.calculateScoreFromTimeAggreg({x:self._ranks[x] for x in sc1._ranks},trainingtimes)
                 ev2.calculateScoreFromTimeAggreg({x:self._ranks[x] for x in sc2._ranks},trainingtimes)
                 ev3.calculateScoreFromTimeAggreg({x:self._ranks[x] for x in sc3._ranks},trainingtimes)
-                # ev1.calculateScore({x:self._ranks[x] for x in sc1._ranks},trainingtimes)
-                # ev2.calculateScore({x:self._ranks[x] for x in sc2._ranks},trainingtimes)
-                # ev3.calculateScore({x:self._ranks[x] for x in sc3._ranks},trainingtimes)
                 meanF = meanFscore(ev1._F,ev2._F,ev3._F)
                 Fplus=meanF
                 #no negative parameters
@@ -602,9 +530,6 @@ class score:
                 ev1 = evaluate()
                 ev2 = evaluate()
                 ev3 = evaluate()
-                # ev1.calculateScore({x:self._ranks[x] for x in sc1._ranks},trainingtimes)
-                # ev2.calculateScore({x:self._ranks[x] for x in sc2._ranks},trainingtimes)
-                # ev3.calculateScore({x:self._ranks[x] for x in sc3._ranks},trainingtimes)
                 ev1.calculateScoreFromTimeAggreg({x:self._ranks[x] for x in sc1._ranks},trainingtimes)
                 ev2.calculateScoreFromTimeAggreg({x:self._ranks[x] for x in sc2._ranks},trainingtimes)
                 ev3.calculateScoreFromTimeAggreg({x:self._ranks[x] for x in sc3._ranks},trainingtimes)
@@ -612,7 +537,6 @@ class score:
                 Fminus=meanF
                 #maybe check when parameters<0
                 directmetrics3[metric] = (Fplus-Fminus)/(float(derstep)+float(min(confmetrics3[metric],derstep)))
-                #print(float(step)*(Fplus-Fminus)/(2*float(derstep)))
                 derivconfmetrics3 = confmetrics3.copy()
 
 
@@ -648,9 +572,6 @@ class score:
                 ev1.calculateScoreFromTimeAggreg({x:self._ranks[x] for x in sc1._ranks},trainingtimes)
                 ev2.calculateScoreFromTimeAggreg({x:self._ranks[x] for x in sc2._ranks},trainingtimes)
                 ev3.calculateScoreFromTimeAggreg({x:self._ranks[x] for x in sc3._ranks},trainingtimes)
-                # ev1.calculateScore({x:self._ranks[x] for x in sc1._ranks},trainingtimes)
-                # ev2.calculateScore({x:self._ranks[x] for x in sc2._ranks},trainingtimes)
-                # ev3.calculateScore({x:self._ranks[x] for x in sc3._ranks},trainingtimes)
                 meanF = meanFscore(ev1._F,ev2._F,ev3._F)
                 if math.floor(meanF*100000)/100000  > math.floor(maxev._F*100000)/100000:
                     maxev=ev
@@ -664,9 +585,6 @@ class score:
                     ev1.calculateScoreFromTimeAggreg({x:self._ranks[x] for x in sc1._ranks},trainingtimes)
                     ev2.calculateScoreFromTimeAggreg({x:self._ranks[x] for x in sc2._ranks},trainingtimes)
                     ev3.calculateScoreFromTimeAggreg({x:self._ranks[x] for x in sc3._ranks},trainingtimes)
-                    # ev1.calculateScore({x:self._ranks[x] for x in sc1._ranks},trainingtimes)
-                    # ev2.calculateScore({x:self._ranks[x] for x in sc2._ranks},trainingtimes)
-                    # ev3.calculateScore({x:self._ranks[x] for x in sc3._ranks},trainingtimes)
                     maxev1 = ev1
                     maxev2 = ev2
                     maxev3 = ev3
@@ -678,9 +596,6 @@ class score:
             derivconfmetrics2 = confmetrics2.copy()
             confmetrics3={metric:maxconfmetrics3[metric] for metric in confmetrics3}
             derivconfmetrics3 = confmetrics3.copy()
-            #print(confmetrics)
-            #print(confmetrics)
-            #print("Test",maxF)
             k=k+1
         maxmetric=0
         for metric in confmetrics1:
