@@ -288,7 +288,7 @@ class score:
             print(confmetrics)
             print("Test",ev._F)
 
-    def gradDescentLinExp(self,tstart,tend,tmesure,tendtraining,nb_links,trainingtimes,init,derstep,sizelinexptep,numlinexptep):
+    def gradDescentLinExp(self,tstart,tend,tmesure,tendtraining,nb_links,trainingtimes,init,derstep,sizelinexptep,numlinexptep,GDMaxstep):
         self.rankPairs(tmesure,tendtraining,init)
         self.normalizeranksbyintegral(nb_links)
         ev = evaluate()
@@ -300,7 +300,7 @@ class score:
         directmetrics = dict.fromkeys(init)
         maxindex=-1
         k=0
-        maxstep=10000
+        maxstep=GDMaxstep
 
         while maxindex!=0 and k <maxstep: #no change or 100 step
             if k%2 == 0:

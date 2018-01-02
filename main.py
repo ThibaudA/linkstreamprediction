@@ -9,19 +9,24 @@ import matplotlib.pyplot as plt
 import operator
 from operator import itemgetter, attrgetter
 import os
-# nodes = dict() # observation
-times = dict() # observation
-predtimes=dict()
+times = dict()  #Links ObsT+PredT+Obs
+predtimes=dict() #Links Pred
 metrics= metrics()
-Extract =False
+Extract = False
+OnePred = False
+#Maximum/number of step of random explo and gradient descent
+REMaxstep =10
+REPMaxstep=10
+GDMaxstep=10
+GDPMaxstep=10
 if len(sys.argv)!=2:
-	sys.stderr.write("0  #start time of TrainingObservation \n")
+	sys.stderr.write("0  #start time of TrainingObservation\n")
 	sys.stderr.write("100 #end time of TrainingObservation\n")
 
 	sys.stderr.write("50 #start time of TrainingPrediction\n")
 	sys.stderr.write("100 #end time of TrainingPrediction\n")
 
-	sys.stderr.write("0  #start time of Observation \n")
+	sys.stderr.write("0  #start time of Observation\n")
 	sys.stderr.write("100 #end time of Observation\n")
 
 	sys.stderr.write("50 #start time of Prediction\n")
@@ -29,7 +34,8 @@ if len(sys.argv)!=2:
 
 	sys.stderr.write("Metrics #Metrics used\n")
 	sys.stderr.write("intercontactTimes\n")
-	sys.stderr.write("commonNeighbors\n\n")
+	sys.stderr.write("commonNeighbors\n")
+	sys.stderr.write("EndMetrics\n")
 
 	sys.stderr.write("Commentaries:\n")
 
@@ -41,7 +47,6 @@ else:
 	tendobsT=float(conf.readline().split("#")[0].strip(" ")) #end time of Trainingobservation
 	tstartpredT =  float(conf.readline().split("#")[0].strip(" "))  #start time of training Pred
 	tendpredT = float(conf.readline().split("#")[0].strip(" "))  #end time of training Pred
-	T = tendpredT - tstartpredT #trainingpred duration (temporaire)
 
 	tstartobs = float(conf.readline().split("#")[0].strip(" "))  #start time of observation
 	tendobs=float(conf.readline().split("#")[0].strip(" ")) #end time of observation
@@ -52,19 +57,20 @@ else:
 
 	MetricsOK = False
 	sys.stderr.write(conf.readline().split("#")[0].strip(" ") + ":\n")
-	while MetricsOK != True:
-		line = conf.readline()
-		if line != "EndMetrics\n":
+	while MetricsOK != True:    #Read metrics
+		line = conf.readline().rstrip("\n").rstrip(" ")
+		if line != "EndMetrics":
 			if len(line.split(" "))!=1: # if one or more parameter
-				metrics._confmetrics[line.split(" ")[0]]=list(map(float,line.rstrip("\n").split(" ")[1].split(",")))
+				metrics._confmetrics[line.split(" ")[0]]=list(map(float,line.split(" ")[1].split(",")))
 			else:
-				metrics._confmetrics[line.split(" ")[0].rstrip("\n")]=[1.]
+				metrics._confmetrics[line.split(" ")[0]]=[0,1.]  # Default Values
 		else:
 			MetricsOK=True
 sys.stderr.write(str(metrics._confmetrics)+"\n")
-while line !="Commentaries:\n":
+while line.rstrip("\n") !="Commentaries:":   #Other Options
 	line = conf.readline()
-	if line.split(" ")[0].rstrip("\n") == "Extract":
+	print("bla")
+	if line.split(" ")[0].rstrip("\n") == "Extract":  #Extract prediction infos in ExtractDirectory
 		ExtractDirectory=line.split(" ")[1].rstrip("\n")
 		Extract = True
 		print(ExtractDirectory)
@@ -73,6 +79,8 @@ while line !="Commentaries:\n":
 			os.stat(dir)
 		except:
 			os.mkdir(dir)
+	if line.split(" ")[0].rstrip("\n") == "Onepred": #One prediction with given parameters
+		OnePred=True
 
 
 sys.stdout.write("tstartobsT: "+str(tstartobsT)+"\n")
@@ -89,7 +97,7 @@ sys.stdout.write("tsendpred: "+str(tendpred)+"\n")
 t= 0
 nb_linksPRED=0
 
-while t<tstartobsT:
+while t<tstartobsT:   #Go to the start
 	line = sys.stdin.readline()
 	contents = line.split(" ")
 	t = float(contents[0])
@@ -99,7 +107,7 @@ while t<tendpred:
 	line = sys.stdin.readline()
 	contents = line.split(" ")
 	t = float(contents[0])
-	if (tstartobsT<=t<tendobsT) or (tstartpredT<=t<tendpredT) or (tstartobs<=t<tendobs):
+	if (tstartobsT<=t<tendobsT) or (tstartpredT<=t<tendpredT) or (tstartobs<=t<tendobs):  #Saving usefull links
 		u = int(contents[1])
 		v = int(contents[2])
 		link= frozenset([u,v])
@@ -107,7 +115,7 @@ while t<tendpred:
 			times[link] = []
 		times[link].append(t)
 
-	if tstartpred<=t<tendpred:
+	if tstartpred<=t<tendpred: #Saving Ground Truth
 		u = int(contents[1])
 		v = int(contents[2])
 		link= frozenset([u,v])
@@ -128,7 +136,7 @@ nb_linksOBS2=0
 nb_linksTRAINING=0
 obstimes=dict()
 trainingtimes=dict()
-for link in times:
+for link in times:  #Creating the Dicts for the learning periods
 	obstimes[link]=[x for x in times[link] if x>=tstartobsT and x<tendobsT]
 	if len(obstimes[link])==0:
 		del obstimes[link]
@@ -136,7 +144,7 @@ for link in times:
 	if len(trainingtimes[link])==0:
 		del trainingtimes[link]
 
-obsnodes=dict()
+obsnodes=dict() #Creating dict with the relation between nodes
 for link in obstimes:
 	u,v = link
 	if u not in obsnodes:
@@ -145,17 +153,17 @@ for link in obstimes:
 		obsnodes[v]=set()
 	obsnodes[u].add(v)
 	obsnodes[v].add(u)
-	nb_linksOBS1 = nb_linksOBS1 + len([x for x in obstimes[link] if x>=tstartobsT and x<(tendobsT+tstartobsT)/2])
+	nb_linksOBS1 = nb_linksOBS1 + len([x for x in obstimes[link] if x>=tstartobsT and x<(tendobsT+tstartobsT)/2]) #Usefull for some extrapolation methods
 	nb_linksOBS2 = nb_linksOBS2 + len([x for x in obstimes[link] if x>=(tendobsT+tstartobsT)/2 and x<tendobsT])
 	nb_linksOBS=nb_linksOBS1+nb_linksOBS2
 
-if Extract:
+if Extract: #Extract the usefull parts of the dataset
 	score.extractTime(obstimes,ExtractDirectory+ "/ExtractOBS")
 	score.extractTime(trainingtimes,ExtractDirectory+ "/ExtractTRAIN")
 
 
 
-trainingtimesaggregated=dict()
+trainingtimesaggregated=dict() #Creating a Dict for faster prediction evaluation
 for link in trainingtimes:
 	nb_linksTRAINING = nb_linksTRAINING + len(trainingtimes[link])
 	trainingtimesaggregated[link]= len(trainingtimes[link])
@@ -166,8 +174,7 @@ sys.stdout.write("Nblinks OBS "+str(nb_linksOBS)+"\n")
 sys.stdout.write("Nblinks TRAINING C0 "+str(nb_linksTRAINING)+"\n")
 
 #Class Making
-#3 Class : C1 = New link C2 = less than 5 link C3 more than 5
-# sc.traceActivityhistogram(50,obstimes)
+#3 Class : C1 = New link C2 = less than classthreshold link C3 more than classthreshold
 sc1=score()
 sc2=score()
 sc3=score()
@@ -204,7 +211,7 @@ metrics.computeMetrics(sc,tstartobsT,tendobsT,obstimes,obsnodes) #compute all me
 sc.integrateMetrics(tstartpredT,tendpredT) #integrate metrics
 # sc.correlationMatrix(metrics._confmetrics)
 # sys.exit()
-sc.setMaxByMetric()
+sc.setMaxByMetric()  #Normalisation
 sc.normalizeMetrics()
 if Extract:
 	sc.extractMetric(metrics._confmetrics,ExtractDirectory+ "/ExtractMetrics")
@@ -237,12 +244,13 @@ scPLUS.normalizeMetrics()
 n= nb_linksTRAINING
 sys.stdout.write("Nblinks predicted C0 "+str(n)+"\n")
 
+if OnePred:
+	sc.OnePred(tstartobsT,tendobsT,tstartpredT,tendpredT,n,obstimes,trainingtimesaggregated,metrics._confmetrics)
 
-# sc.OnePred(tstartobsT,tendobsT,tstartpredT,tendpredT,n,obstimes,trainingtimesaggregated,metrics._confmetrics)
 
-
-initconfmetrics = sc.randomExplo(tstartobsT,tendobsT,tstartpredT,tendpredT,n,trainingtimesaggregated,metrics._confmetrics,10)
-initconfmetrics1,initconfmetrics2,initconfmetrics3 = scPLUS.randomExploPLUS(tstartobsT,tendobsT,tstartpredT,tendpredT,n,trainingtimesaggregated,metrics._confmetrics,15,sc1,sc2,sc3)
+#Random exploration for gradient descent initialisation
+initconfmetrics = sc.randomExplo(tstartobsT,tendobsT,tstartpredT,tendpredT,n,trainingtimesaggregated,metrics._confmetrics,REMaxstep)
+initconfmetrics1,initconfmetrics2,initconfmetrics3 = scPLUS.randomExploPLUS(tstartobsT,tendobsT,tstartpredT,tendpredT,n,trainingtimesaggregated,metrics._confmetrics,REPMaxstep,sc1,sc2,sc3)
 #
 
 sys.stderr.write("fin init "+str(initconfmetrics)+" \n")
@@ -255,12 +263,12 @@ sizelinexptep = 0.05
 numlinexptep = 100
 #perform gradient descent to better tune the parameters
 
-predconfmetric, Finalscore =sc.gradDescentLinExp(tstartobsT,tendobsT,tstartpredT,tendpredT,n,trainingtimesaggregated,initconfmetrics,derstep,sizelinexptep,numlinexptep)
+predconfmetric, Finalscore =sc.gradDescentLinExp(tstartobsT,tendobsT,tstartpredT,tendpredT,n,trainingtimesaggregated,initconfmetrics,derstep,sizelinexptep,numlinexptep,GDMaxstep)
 sys.stderr.write("C0 Done\n")
-predconfmetric1,predconfmetric2,predconfmetric3,FinalscorePLUS,Finalscore1,Finalscore2,Finalscore3=scPLUS.gradDescentLinExpPLUS(tstartobsT,tendobsT,tstartpredT,tendpredT,n,trainingtimesaggregated,initconfmetrics1,initconfmetrics2,initconfmetrics3,derstep,sizelinexptep,numlinexptep,10,sc1,sc2,sc3)
+predconfmetric1,predconfmetric2,predconfmetric3,FinalscorePLUS,Finalscore1,Finalscore2,Finalscore3=scPLUS.gradDescentLinExpPLUS(tstartobsT,tendobsT,tstartpredT,tendpredT,n,trainingtimesaggregated,initconfmetrics1,initconfmetrics2,initconfmetrics3,derstep,sizelinexptep,numlinexptep,GDPMaxstep,sc1,sc2,sc3)
 sys.stderr.write("C123 Done\n")
 
-if Extract:
+if Extract: #extract the learing results
 	score.extractCoef(predconfmetric,predconfmetric1,predconfmetric2,predconfmetric3,ExtractDirectory+ "/ExtractCoefs")
 	sc.extractPrediction(ExtractDirectory+ "/ExtractPredC0")
 	sc1.extractPrediction(ExtractDirectory+ "/ExtractPredC1")
@@ -301,7 +309,7 @@ ev03 = evaluate()
 ev01.calculateScore({x:sc._ranks[x] for x in sc1._ranks},trainingtimes)
 ev02.calculateScore({x:sc._ranks[x] for x in sc2._ranks},trainingtimes)
 ev03.calculateScore({x:sc._ranks[x] for x in sc3._ranks},trainingtimes)
-if Extract:
+if Extract: #extract prediction evaluation
 	evaluate.extractQualitybypair(sc._ranks,trainingtimes,ExtractDirectory+ "/ExtractQualitybypairC0")
 	evaluate.extractQualitybypair(sc1._ranks,trainingtimes,ExtractDirectory+ "/ExtractQualitybypairC1")
 	evaluate.extractQualitybypair(sc2._ranks,trainingtimes,ExtractDirectory+ "/ExtractQualitybypairC2")
@@ -362,15 +370,15 @@ for link in predtimes:
 	predtimesaggregated[link]= len(predtimes[link])
 
 
-sc.resetPairs() #making sure sc is clear (could have created another but memory)
+sc.resetPairs() #making sure sc is clear
 sc.resetRanks()
-sc1.resetPairs() #making sure sc is clear (could have created another but memory)
+sc1.resetPairs() #making sure sc is clear
 sc1.resetRanks()
-sc2.resetPairs() #making sure sc is clear (could have created another but memory)
+sc2.resetPairs() #making sure sc is clear
 sc2.resetRanks()
-sc3.resetPairs() #making sure sc is clear (could have created another but memory)
+sc3.resetPairs() #making sure sc is clear
 sc3.resetRanks()
-scPLUS.resetPairs() #making sure sc is clear (could have created another but memory)
+scPLUS.resetPairs() #making sure sc is clear
 scPLUS.resetRanks()
 
 for u,v in itertools.combinations(obsnodes.keys(),2): #to predict new pair of nodes
@@ -482,7 +490,7 @@ sys.stdout.write("Nbpairs C3 "+str(len(sc3._ranks))+"\n")
 
 
 sys.stdout.write("C0{\n")
-
+#print the metric coefs
 for item in sorted(predconfmetric.items(),key=itemgetter(1),reverse=True):
 
 	sys.stdout.write(str(item[0])+" "+ str(item[1])+"\n")
