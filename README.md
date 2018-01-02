@@ -15,38 +15,60 @@ Matplotlib
 
 ##Data structure
 
+Undirected link stream
+
 Format:
 
 ```
 t u v
-t u v
-t u v
-t u v
 ...
 ```
 
-## Running the prediction.
-cat dataset | python main.py configfile
+(float) t : time of the link
+(int,int) u v : pair of nodes
 
+## Running the prediction.
+
+```
+cat dataset | python main.py configfile
+```
 
 
 Configuration file structure:
-
-start time of observation training period
-end time of observation training period
-start time of prediction training period
-end time of prediction training period
-start time of observation
-end time of observation
-start time of pred
-end time of pred
+```
+(float) #start time of observation training period
+(float) #end time of observation training period
+(float) #start time of prediction training period
+(float) #end time of prediction training period
+(float) #start time of observation
+(float) #end time of observation
+(float) #start time of pred
+(float) #end time of pred
 Metrics #Metrics used:
-commonNeighbors 0,1
-benchMark 0,1
-benchMarkReduxTimeInter10000 0,1
+Metric1 [parameters]
+Metric2 [parameters]
+Metric3 [parameters]
 EndMetrics
 Commentaries:
-InfoCom2h
+Bla bla
+```
+
+Metrics available:
+
+```
+benchMark
+commonNeighbors
+weightedCommonNeighbors
+resourceAlloc
+weightedResourceAlloc
+adamicAdar
+weightedAdamicAdar
+sorensenIndex
+weightedSorensenIndex
+benchMarkReduxNbLinksk
+benchMarkReduxTimeInterk"
+```
+[parameters]: (int,in) 
 Explain how to run the automated tests for this system
 
 ### Break down into end to end tests
