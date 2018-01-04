@@ -14,6 +14,7 @@ Matplotlib
 ```
 
 ##Data structure
+
 Default settings:
 Prediction with and without classes
 3 classes by pair activity:
@@ -21,15 +22,21 @@ Prediction with and without classes
   C2: less than classthreshold=5 links during observation
   C3: more than classthreshold=5 links during observation
 
+C0: without classes
+AllClasses: Union of C1, C2 and C3
+
 Activity extrapolation during training: Activity during training prediction period
 Activity extrapolation during real prediction: Extrapolation of observation period activity
 
-gradient descent initiation: Random exploration of the parameters space between the parameters indicated in the configfile for each metric
+gradient descent initiation: Random exploration of the parameters space between the parameters indicated in the configuration file for each metric
 
 Other settings:
 
   Prediction extraction
-
+  Number of step during random explo
+  Max number of step during gradient descent
+  fine tuning of gradient descent
+  one step prediction using the the parameters indicated in the configuration file for each metric
 
 Undirected link stream
 
