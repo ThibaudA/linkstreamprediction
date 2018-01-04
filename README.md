@@ -12,8 +12,10 @@ Numpy
 Scipy
 Matplotlib
 ```
-ce
+
+
 ###Data structure
+
 
 Default settings:
 Prediction with and without classes
