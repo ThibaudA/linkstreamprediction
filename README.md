@@ -51,7 +51,7 @@ t u v
 ```
 
 (float) t : time of the link
-(int,int) u v : pair of nodes
+(int),(int) u v : pair of nodes
 
 ## Running the prediction.
 
@@ -94,9 +94,9 @@ weightedSorensenIndex
 benchMarkReduxNbLinksk
 benchMarkReduxTimeInterk"
 ```
-parameters: (int,int)
+parameters: (int),(int)
 
-### Break down into end to end tests
+<!-- ### Break down into end to end tests
 
 Explain what these tests test and why
 
@@ -129,3 +129,4 @@ This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md
 * Hat tip to anyone who's code was used
 * Inspiration
 * etc
+-->
