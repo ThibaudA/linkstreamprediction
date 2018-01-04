@@ -13,7 +13,7 @@ Scipy
 Matplotlib
 ```
 
-##Data structure
+###Data structure
 
 Default settings:
 Prediction with and without classes
