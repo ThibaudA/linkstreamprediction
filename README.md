@@ -14,10 +14,8 @@ Matplotlib
 ```
 
 
-###Data structure
+### Default settings
 
-
-Default settings:
 Prediction with and without classes
 3 classes by pair activity:
   C1: pair without interaction during observation
@@ -39,6 +37,9 @@ Other settings:
   Max number of step during gradient descent
   fine tuning of gradient descent
   one step prediction using the the parameters indicated in the configuration file for each metric
+
+
+### Data structure
 
 Undirected link stream
 
