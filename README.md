@@ -14,6 +14,22 @@ Matplotlib
 ```
 
 ##Data structure
+Default settings:
+Prediction with and without classes
+3 classes by pair activity:
+  C1: pair without interaction during observation
+  C2: less than classthreshold=5 links during observation
+  C3: more than classthreshold=5 links during observation
+
+Activity extrapolation during training: Activity during training prediction period
+Activity extrapolation during real prediction: Extrapolation of observation period activity
+
+gradient descent initiation: Random exploration of the parameters space between the parameters indicated in the configfile for each metric
+
+Other settings:
+
+  Prediction extraction
+
 
 Undirected link stream
 
@@ -68,8 +84,7 @@ weightedSorensenIndex
 benchMarkReduxNbLinksk
 benchMarkReduxTimeInterk"
 ```
-[parameters]: (int,in) 
-Explain how to run the automated tests for this system
+parameters: (int,int)
 
 ### Break down into end to end tests
 
@@ -79,23 +94,7 @@ Explain what these tests test and why
 Give an example
 ```
 
-### And coding style tests
 
-Explain what these tests test and why
-
-```
-Give an example
-```
-
-## Deployment
-
-Add additional notes about how to deploy this on a live system
-
-## Built With
-
-* [Dropwizard](http://www.dropwizard.io/1.0.2/docs/) - The web framework used
-* [Maven](https://maven.apache.org/) - Dependency Management
-* [ROME](https://rometools.github.io/rome/) - Used to generate RSS Feeds
 
 ## Contributing
 
