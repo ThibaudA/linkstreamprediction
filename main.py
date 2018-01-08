@@ -26,11 +26,11 @@ if len(sys.argv)!=2:
 	sys.stderr.write("50 #start time of TrainingPrediction\n")
 	sys.stderr.write("100 #end time of TrainingPrediction\n")
 
-	sys.stderr.write("0  #start time of Observation\n")
+	sys.stderr.write("50  #start time of Observation\n")
 	sys.stderr.write("100 #end time of Observation\n")
 
-	sys.stderr.write("50 #start time of Prediction\n")
-	sys.stderr.write("100 #end time of Prediction\n")
+	sys.stderr.write("100 #start time of Prediction\n")
+	sys.stderr.write("150 #end time of Prediction\n")
 
 	sys.stderr.write("Metrics #Metrics used\n")
 	sys.stderr.write("intercontactTimes\n")
@@ -259,13 +259,13 @@ sys.stderr.write("fin init C2"+str(initconfmetrics2)+" \n")
 sys.stderr.write("fin init C3"+str(initconfmetrics3)+" \n")
 
 derstep = 0.05
-sizelinexptep = 0.05
-numlinexptep = 100
+sizelinexpstep = 0.05
+numlinexpstep = 100
 #perform gradient descent to better tune the parameters
 
-predconfmetric, Finalscore =sc.gradDescentLinExp(tstartobsT,tendobsT,tstartpredT,tendpredT,n,trainingtimesaggregated,initconfmetrics,derstep,sizelinexptep,numlinexptep,GDMaxstep)
+predconfmetric, Finalscore =sc.gradDescentLinExp(tstartobsT,tendobsT,tstartpredT,tendpredT,n,trainingtimesaggregated,initconfmetrics,derstep,sizelinexpstep,numlinexpstep,GDMaxstep)
 sys.stderr.write("C0 Done\n")
-predconfmetric1,predconfmetric2,predconfmetric3,FinalscorePLUS,Finalscore1,Finalscore2,Finalscore3=scPLUS.gradDescentLinExpPLUS(tstartobsT,tendobsT,tstartpredT,tendpredT,n,trainingtimesaggregated,initconfmetrics1,initconfmetrics2,initconfmetrics3,derstep,sizelinexptep,numlinexptep,GDPMaxstep,sc1,sc2,sc3)
+predconfmetric1,predconfmetric2,predconfmetric3,FinalscorePLUS,Finalscore1,Finalscore2,Finalscore3=scPLUS.gradDescentLinExpPLUS(tstartobsT,tendobsT,tstartpredT,tendpredT,n,trainingtimesaggregated,initconfmetrics1,initconfmetrics2,initconfmetrics3,derstep,sizelinexpstep,numlinexpstep,GDPMaxstep,sc1,sc2,sc3)
 sys.stderr.write("C123 Done\n")
 
 if Extract: #extract the learing results

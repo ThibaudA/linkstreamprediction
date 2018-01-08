@@ -30,15 +30,8 @@ Prediction with and without classes
 * Activity extrapolation during training: Activity during training prediction period
 * Activity extrapolation during real prediction: Extrapolation of observation period activity
 
-* gradient descent initiation: Random exploration of the parameters space between the parameters indicated in the configuration file for each metric
+* Gradient descent initiation: Random exploration of the parameters space between the parameters indicated in the configuration file for each metric
 
-Other settings:
-
-* Prediction extraction (In config file : [Option] = \<directory\>)
-* Number of step during random explo (Variables: RENbstep and REPNbstep)
-* Max number of step during gradient descent (Variables: GDMaxstep and GDPMaxstep)
-* fine tuning of gradient descent
-* one step prediction using the the parameters indicated in the configuration file for each metric
 
 ### Data structure
 
@@ -58,20 +51,18 @@ t u v
 ## Running the prediction.
 
 ```
-cat dataset | python main.py configfile
+cat <data_file>  | python main.py <config_file>
 ```
-
 
 Configuration file structure:
 ```
-(float) #start time of observation training period
-(float) #end time of observation training period
-(float) #start time of prediction training period
-(float) #end time of prediction training period
-(float) #start time of observation
-(float) #end time of observation
-(float) #start time of pred
-(float) #end time of pred
+<float:tstartobsT> #start time of observation training period
+<float:tendobsT> #end time of observation training period
+<float:tstartpredT> #start time of prediction training period
+<float:tendpredT> #end time of prediction training period
+<float:tstartobs> #start time of observation
+<float:tendobs> #end time of observation
+<float:tendpred> #end time of pred
 Metrics #Metrics used:
 Metric1 [parameters]
 Metric2 [parameters]
@@ -94,10 +85,21 @@ adamicAdar
 weightedAdamicAdar
 sorensenIndex
 weightedSorensenIndex
-benchMarkReduxNbLinksk
-benchMarkReduxTimeInterk"
+benchMarkReduxNbLinks<int:k>
+benchMarkReduxTimeInter<int:k>"
 ```
+
 parameters: (int),(int)
+
+## Other settings:
+
+* Prediction extraction (In config file : [Option] = Extract \<directory\>)
+* Number of step during random explo (Variables: RENbstep and REPNbstep)
+* Max number of step during gradient descent (Variables: GDMaxstep and GDPMaxstep)
+* Fine tuning of gradient descent (derstep, sizelinexptep and numlinexptep )
+* One step prediction using the the parameters indicated in the configuration file for each metric (In config file : [Option] = Onepred)
+
+
 
 <!-- ### Break down into end to end tests
 
