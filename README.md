@@ -34,7 +34,7 @@ Prediction with and without classes
 
 Other settings:
 
-* Prediction extraction (In config file : [Option] = <directory>)
+* Prediction extraction (In config file : [Option] = \<directory\>)
 * Number of step during random explo (Variables: RENbstep and REPNbstep)
 * Max number of step during gradient descent (Variables: GDMaxstep and GDPMaxstep)
 * fine tuning of gradient descent
