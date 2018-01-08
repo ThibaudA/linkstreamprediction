@@ -44,9 +44,9 @@ t u v
 ...
 ```
 
-\<float: t\> : time of the link
+\<float:t\> : time of the link
 
-\<int> u\>,\<int> v\> : pair of nodes
+\<int:u\>,\<int:v\> : pair of nodes
 
 ## Running the prediction.
 
