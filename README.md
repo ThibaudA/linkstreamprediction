@@ -20,27 +20,33 @@ Prediction with and without classes
 
 3 classes by pair activity:
 
+  C0: without classes
+
   C1: pair without interaction during observation
 
   C2: less than classthreshold=5 links during observation
 
   C3: more than classthreshold=5 links during observation
 
-C0: without classes
 
 AllClasses: Union of C1, C2 and C3
 
 Activity extrapolation during training: Activity during training prediction period
+
 Activity extrapolation during real prediction: Extrapolation of observation period activity
 
 gradient descent initiation: Random exploration of the parameters space between the parameters indicated in the configuration file for each metric
 
 Other settings:
 
-  Prediction extraction
+Prediction extraction
+
   Number of step during random explo
+
   Max number of step during gradient descent
+
   fine tuning of gradient descent
+
   one step prediction using the the parameters indicated in the configuration file for each metric
 
 
@@ -56,6 +62,7 @@ t u v
 ```
 
 (float) t : time of the link
+
 (int),(int) u v : pair of nodes
 
 ## Running the prediction.
