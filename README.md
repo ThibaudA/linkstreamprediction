@@ -19,21 +19,17 @@ Matplotlib
 Prediction with and without classes
 
 3 classes by pair activity:
+```
 
   C0: without classes
-
   C1: pair without interaction during observation
-
   C2: less than classthreshold=5 links during observation
-
   C3: more than classthreshold=5 links during observation
+  AllClasses: Union of C1, C2 and C3
+```
 
-
-AllClasses: Union of C1, C2 and C3
-
-Activity extrapolation during training: Activity during training prediction period
-
-Activity extrapolation during real prediction: Extrapolation of observation period activity
+*Activity extrapolation during training: Activity during training prediction period
+*Activity extrapolation during real prediction: Extrapolation of observation period activity
 
 gradient descent initiation: Random exploration of the parameters space between the parameters indicated in the configuration file for each metric
 
