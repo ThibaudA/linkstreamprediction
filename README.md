@@ -20,7 +20,6 @@ Prediction with and without classes
 
 3 classes by pair activity:
 ```
-
   C0: without classes
   C1: pair without interaction during observation
   C2: less than classthreshold=5 links during observation
@@ -28,23 +27,18 @@ Prediction with and without classes
   AllClasses: Union of C1, C2 and C3
 ```
 
-*Activity extrapolation during training: Activity during training prediction period
-*Activity extrapolation during real prediction: Extrapolation of observation period activity
+* Activity extrapolation during training: Activity during training prediction period
+* Activity extrapolation during real prediction: Extrapolation of observation period activity
 
-gradient descent initiation: Random exploration of the parameters space between the parameters indicated in the configuration file for each metric
+* gradient descent initiation: Random exploration of the parameters space between the parameters indicated in the configuration file for each metric
 
 Other settings:
 
-Prediction extraction
-
-  Number of step during random explo
-
-  Max number of step during gradient descent
-
-  fine tuning of gradient descent
-
-  one step prediction using the the parameters indicated in the configuration file for each metric
-
+* Prediction extraction (In config file : [Option] = <directory>)
+* Number of step during random explo (Variables: RENbstep and REPNbstep)
+* Max number of step during gradient descent (Variables: GDMaxstep and GDPMaxstep)
+* fine tuning of gradient descent
+* one step prediction using the the parameters indicated in the configuration file for each metric
 
 ### Data structure
 
@@ -83,6 +77,7 @@ Metric1 [parameters]
 Metric2 [parameters]
 Metric3 [parameters]
 EndMetrics
+[Options]
 Commentaries:
 Bla bla
 ```

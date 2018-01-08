@@ -15,8 +15,8 @@ metrics= metrics()
 Extract = False
 OnePred = False
 #Maximum/number of step of random explo and gradient descent
-REMaxstep =10
-REPMaxstep=10
+RENbstep =10
+REPNbstep=10
 GDMaxstep=10
 GDPMaxstep=10
 if len(sys.argv)!=2:
@@ -249,8 +249,8 @@ if OnePred:
 
 
 #Random exploration for gradient descent initialisation
-initconfmetrics = sc.randomExplo(tstartobsT,tendobsT,tstartpredT,tendpredT,n,trainingtimesaggregated,metrics._confmetrics,REMaxstep)
-initconfmetrics1,initconfmetrics2,initconfmetrics3 = scPLUS.randomExploPLUS(tstartobsT,tendobsT,tstartpredT,tendpredT,n,trainingtimesaggregated,metrics._confmetrics,REPMaxstep,sc1,sc2,sc3)
+initconfmetrics = sc.randomExplo(tstartobsT,tendobsT,tstartpredT,tendpredT,n,trainingtimesaggregated,metrics._confmetrics,RENbstep)
+initconfmetrics1,initconfmetrics2,initconfmetrics3 = scPLUS.randomExploPLUS(tstartobsT,tendobsT,tstartpredT,tendpredT,n,trainingtimesaggregated,metrics._confmetrics,REPNbstep,sc1,sc2,sc3)
 #
 
 sys.stderr.write("fin init "+str(initconfmetrics)+" \n")
