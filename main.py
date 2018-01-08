@@ -56,7 +56,7 @@ else:
 	sc=score()
 
 	MetricsOK = False
-	sys.stderr.write(conf.readline().split("#")[0].strip(" ") + ":\n")
+	sys.stdout.write(conf.readline().split("#")[0].strip(" ") + ":\n")
 	while MetricsOK != True:    #Read metrics
 		line = conf.readline().rstrip("\n").rstrip(" ")
 		if line != "EndMetrics":
@@ -66,14 +66,13 @@ else:
 				metrics._confmetrics[line.split(" ")[0]]=[0,1.]  # Default Values
 		else:
 			MetricsOK=True
-sys.stderr.write(str(metrics._confmetrics)+"\n")
+sys.stdout.write(str(metrics._confmetrics)+"\n")
 while line.rstrip("\n") !="Commentaries:":   #Other Options
 	line = conf.readline()
-	print("bla")
 	if line.split(" ")[0].rstrip("\n") == "Extract":  #Extract prediction infos in ExtractDirectory
 		ExtractDirectory=line.split(" ")[1].rstrip("\n")
 		Extract = True
-		print(ExtractDirectory)
+		sys.stdout.write("ExtractDirectory = "+ExtractDirectory)
 		dir = os.path.dirname(ExtractDirectory+"/")
 		try:
 			os.stat(dir)
@@ -253,10 +252,10 @@ initconfmetrics = sc.randomExplo(tstartobsT,tendobsT,tstartpredT,tendpredT,n,tra
 initconfmetrics1,initconfmetrics2,initconfmetrics3 = scPLUS.randomExploPLUS(tstartobsT,tendobsT,tstartpredT,tendpredT,n,trainingtimesaggregated,metrics._confmetrics,REPNbstep,sc1,sc2,sc3)
 #
 
-sys.stderr.write("fin init "+str(initconfmetrics)+" \n")
-sys.stderr.write("fin init C1 "+str(initconfmetrics1)+" \n")
-sys.stderr.write("fin init C2"+str(initconfmetrics2)+" \n")
-sys.stderr.write("fin init C3"+str(initconfmetrics3)+" \n")
+sys.stdout.write("fin init "+str(initconfmetrics)+" \n")
+sys.stdout.write("fin init C1 "+str(initconfmetrics1)+" \n")
+sys.stdout.write("fin init C2"+str(initconfmetrics2)+" \n")
+sys.stdout.write("fin init C3"+str(initconfmetrics3)+" \n")
 
 derstep = 0.05
 sizelinexpstep = 0.05
@@ -264,9 +263,9 @@ numlinexpstep = 100
 #perform gradient descent to better tune the parameters
 
 predconfmetric, Finalscore =sc.gradDescentLinExp(tstartobsT,tendobsT,tstartpredT,tendpredT,n,trainingtimesaggregated,initconfmetrics,derstep,sizelinexpstep,numlinexpstep,GDMaxstep)
-sys.stderr.write("C0 Done\n")
+sys.stdout.write("C0 Done\n")
 predconfmetric1,predconfmetric2,predconfmetric3,FinalscorePLUS,Finalscore1,Finalscore2,Finalscore3=scPLUS.gradDescentLinExpPLUS(tstartobsT,tendobsT,tstartpredT,tendpredT,n,trainingtimesaggregated,initconfmetrics1,initconfmetrics2,initconfmetrics3,derstep,sizelinexpstep,numlinexpstep,GDPMaxstep,sc1,sc2,sc3)
-sys.stderr.write("C123 Done\n")
+sys.stdout.write("C123 Done\n")
 
 if Extract: #extract the learing results
 	score.extractCoef(predconfmetric,predconfmetric1,predconfmetric2,predconfmetric3,ExtractDirectory+ "/ExtractCoefs")
@@ -334,10 +333,10 @@ sys.stdout.write("C3: \n")
 Finalscore3.printeval()
 
 
-sys.stderr.write("fin train "+str(predconfmetric)+" "+str(Finalscore._F)+"\n \n")
-sys.stderr.write("fin train C1 "+str(predconfmetric1)+" "+str(Finalscore1._F)+"\n \n")
-sys.stderr.write("fin train C2"+str(predconfmetric2)+" "+str(Finalscore2._F)+"\n \n")
-sys.stderr.write("fin train C3"+str(predconfmetric3)+" "+str(Finalscore3._F)+"\n \n")
+sys.stdout.write("fin train "+str(predconfmetric)+" "+str(Finalscore._F)+"\n \n")
+sys.stdout.write("fin train C1 "+str(predconfmetric1)+" "+str(Finalscore1._F)+"\n \n")
+sys.stdout.write("fin train C2"+str(predconfmetric2)+" "+str(Finalscore2._F)+"\n \n")
+sys.stdout.write("fin train C3"+str(predconfmetric3)+" "+str(Finalscore3._F)+"\n \n")
 
 #Fin Training Debut Prediction
 

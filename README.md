@@ -13,7 +13,6 @@ Scipy
 Matplotlib
 ```
 
-
 ### Default settings
 
 Prediction with and without classes
@@ -29,7 +28,6 @@ Prediction with and without classes
 
 * Activity extrapolation during training: Activity during training prediction period
 * Activity extrapolation during real prediction: Extrapolation of observation period activity
-
 * Gradient descent initiation: Random exploration of the parameters space between the parameters indicated in the configuration file for each metric
 
 
@@ -48,7 +46,7 @@ t u v
 
 \<int:u\>,\<int:v\> : pair of nodes
 
-## Running the prediction.
+## Running the prediction
 
 ```
 cat <data_file>  | python main.py <config_file>
@@ -91,10 +89,15 @@ benchMarkReduxTimeInter<int:k>"
 
 parameters: (int),(int)
 
+## Output:
+
+By default the algorithm output the prediction quality and the metric combination used by during the prediction by classes.
+The list of predicted links can be extracted via the "Extract" option (see below)
+
 ## Other settings:
 
-* Prediction extraction (In config file : [Option] = Extract \<directory\>)
-* Number of step during random explo (Variables: RENbstep and REPNbstep)
+* Prediction extraction (In configuration file : [Option] = Extract \<directory\>)
+* Number of step during random exploration (Variables: RENbstep and REPNbstep)
 * Max number of step during gradient descent (Variables: GDMaxstep and GDPMaxstep)
 * Fine tuning of gradient descent (derstep, sizelinexptep and numlinexptep )
 * One step prediction using the the parameters indicated in the configuration file for each metric (In config file : [Option] = Onepred)

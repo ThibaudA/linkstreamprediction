@@ -232,7 +232,6 @@ class score:
                     initconfmetrics3 = runmetrics3 #take the best set
 
         for metric in initconfmetrics1:
-            print(self._maxByMetric)
             if metric not in sc1._maxByMetric or sc1._maxByMetric[metric]==0:
                 initconfmetrics1[metric]=0
             if metric not in sc2._maxByMetric or sc2._maxByMetric[metric]==0:
@@ -285,8 +284,6 @@ class score:
             ev = evaluate()
             ev.calculateScoreFromTimeAggreg(self._ranks,testtimes)
 
-            print(confmetrics)
-            print("Test",ev._F)
 
     def gradDescentLinExp(self,tstart,tend,tmesure,tendtraining,nb_links,trainingtimes,init,derstep,sizelinexptep,numlinexptep,GDMaxstep):
         self.rankPairs(tmesure,tendtraining,init)
@@ -368,7 +365,7 @@ class score:
         self.rankPairs(tmesure,tendtraining,confmetrics)
         self.normalizeranksbyintegral(nb_links)
         if k== maxstep:
-            sys.stdout.write("WARNING: Nb max interation\n")
+            sys.stderr.write("WARNING: Nb max interation\n")
         return confmetrics,maxev
 
 
@@ -627,7 +624,7 @@ class score:
         		sc3._ranks[link] = self._ranks[link]
 
         if k== maxstep:
-            sys.stdout.write("WARNING: Nb max interation\n")
+            sys.stderr.write("WARNING: Nb max interation\n")
         return confmetrics1,confmetrics2,confmetrics3,maxev,maxev1,maxev2,maxev3
 
 
