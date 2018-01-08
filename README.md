@@ -17,12 +17,17 @@ Matplotlib
 ### Default settings
 
 Prediction with and without classes
+
 3 classes by pair activity:
+
   C1: pair without interaction during observation
+
   C2: less than classthreshold=5 links during observation
+
   C3: more than classthreshold=5 links during observation
 
 C0: without classes
+
 AllClasses: Union of C1, C2 and C3
 
 Activity extrapolation during training: Activity during training prediction period
