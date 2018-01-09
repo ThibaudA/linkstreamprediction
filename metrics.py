@@ -11,8 +11,9 @@ class metrics:
         self._TP = 0
 
 
-    def computeMetrics(self,sc,tstart,t,times,nodes): #t=end obs
-
+    def computeMetrics(self,sc,tstart,tend,times,nodes):
+        # Add the metric function for each pairs in score
+        # score, observation start time, observation end time, dict with the time of links for each pairs, dict with the neighbors of each nodes
         for metricsname in self._confmetrics: #launch each metrics in confmetrics
 
             if metricsname == "benchMark":
@@ -28,9 +29,9 @@ class metrics:
                     if link not in times:
                         continue
                     if len(times[link]) > n:
-                        sc.addFunction(link,metricsname,self.benchMarkReduxNbLinks(times[link],t,n))
+                        sc.addFunction(link,metricsname,self.benchMarkReduxNbLinks(times[link],tend,n))
                     elif len(times[link]) > 1:
-                        sc.addFunction(link,metricsname,self.benchMarkReduxNbLinks(times[link],t,len(times[link])))
+                        sc.addFunction(link,metricsname,self.benchMarkReduxNbLinks(times[link],tend,len(times[link])))
 
             elif metricsname[:23] == "benchMarkReduxTimeInter":
                 n=float(metricsname[23:])
@@ -39,7 +40,7 @@ class metrics:
                     if link not in times:
                         continue
                     if len(times[link]) > 0:
-                        sc.addFunction(link,metricsname,self.benchMarkReduxTimeInter(times[link],t,n))
+                        sc.addFunction(link,metricsname,self.benchMarkReduxTimeInter(times[link],tend,n))
 
             elif metricsname== "twopointExtrapolation":
                 for link in sc._pair:
@@ -47,7 +48,7 @@ class metrics:
                     if link not in times:
                         continue
                     if len(times[link]) > 0:
-                        sc.addFunction(link,metricsname,self.twopointExtrapolation(times[link],tstart,t))
+                        sc.addFunction(link,metricsname,self.twopointExtrapolation(times[link],tstart,tend))
 
             elif metricsname[:22]== "fitnPointExtrapolation":
                 n=int(metricsname[22:])
@@ -56,7 +57,7 @@ class metrics:
                     if link not in times:
                         continue
                     if len(times[link]) > 0:
-                        sc.addFunction(link,metricsname,self.fitnPointExtrapolation(times[link],tstart,t,n))
+                        sc.addFunction(link,metricsname,self.fitnPointExtrapolation(times[link],tstart,tend,n))
 
             elif metricsname == "intercontactTimes":
                 for link in sc._pair:
@@ -99,7 +100,7 @@ class metrics:
                     u,v=link
                     if link not in times:
                         continue
-                    sc.addFunction(link,"exponentialLast",self.exponentialLast(times[link],t))
+                    sc.addFunction(link,"exponentialLast",self.exponentialLast(times[link],tend))
 
             elif metricsname == "jaccardIndex":
                 for link in sc._pair:
@@ -154,16 +155,20 @@ class metrics:
         return lambda t: s
 
     def benchMarkReduxNbLinks(self,time,t,n):
+        #n= number of link
         s = len(time[-n:])/(float(t-time[-n]))
 
         return lambda t: s
 
     def benchMarkReduxTimeInter(self,time,t,n):
+        # counts the links betwenn n and t
+
         nlinks=len([x for x in time if x>t-n and x<=t])
 
         return lambda t: nlinks/n
 
     def intercontactTimes(self,time):
+        #Obsolete
         itc = np.array([j - i for i,j in zip(time[:-1], time[1:])])
         last=time[-1]
         mean = np.mean(itc)
@@ -173,6 +178,8 @@ class metrics:
         return lambda t: np.exp(-pow((t-last-mean/2)%(mean)-mean/2,2)/(2*pow(var,2)))/(var*math.sqrt(2*math.pi))
 
     def intercontactTimesRedux(self,time,n):
+        #Obsolete
+
         itc = np.array([j - i for i,j in zip(time[-n:-1], time[-n+1:])])
         last=time[-1]
         mean = np.mean(itc)
@@ -182,14 +189,17 @@ class metrics:
         return lambda t: np.exp(-pow((t-last-mean/2)%(mean)-mean/2,2)/(2*pow(var,2)))/(var*math.sqrt(2*math.pi))
 
     def exponentialInterContact(self,time,n):
+        #Obsolete
+
         itc = np.array([j - i for i,j in zip(time[-n:-1], time[-n+1:])])
         last=time[-1]
         mean = np.mean(itc)
         return lambda t: np.exp(-mean)
 
     def exponentialLast(self,time,t):
+        #Obsolete
+
         last=float(time[-1])
-        print(last)
         return lambda t: np.exp(-(t-last))
 
     def commonNeighbors(self,nodes_u,nodes_v):
@@ -254,6 +264,7 @@ class metrics:
         return lambda t:s/(Wu+Wv)
 
     def twopointExtrapolation(self,time,tstart,tend):
+        #Extrapolate the activity of the pair of node using the mean of the activity of each halves of the obsevation period
         tmid=(tstart+tend)/2
         nb_links1=len([x for x in time if x>tstart and x<=tmid])
         nb_links2=len([x for x in time if x>tmid and x<=tend])
@@ -262,6 +273,7 @@ class metrics:
         return lambda t: max(0,a*t+b)
 
     def fitnPointExtrapolation(self,time,tstart,tendobs,n):
+        #Extrapolate the activity of the pair of node using the mean of the activity of n parts of the observation period
 
         xedges=list(range(int(tstart),int(tendobs),int((tendobs-tstart)/n)))
         data=[0]*(len(xedges))
@@ -281,6 +293,7 @@ class metrics:
     #same ACTIVITY
     def linearActivityExtrapolation(self,nb_lines,tstart,tmesure,tstartpred,tendpred):
         return float(nb_lines)*(tendpred-tstartpred)/float(tmesure-tstart)
+        
     #extrapolate ACTIVITY with obs and training
     def twopointrActivityExtrapolation(self,nb_linksOBS,nb_linksTRAINING,tstart,tmesure,tendtraining,tstartpred,tendpred):
         a=2*(nb_linksTRAINING/(tendtraining-tmesure)-nb_linksOBS/(tmesure-tstart))/(tendtraining-tstart)

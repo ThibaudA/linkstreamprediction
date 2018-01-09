@@ -180,7 +180,7 @@ sc3=score()
 scPLUS=score()
 
 classthreshold = 5
-for u,v in itertools.combinations(obsnodes.keys(),2): #to predict new pair of nodes
+for u,v in itertools.combinations(obsnodes.keys(),2): #to predict new pair of nodes and initialize the classes
 	link = frozenset([u,v])
 	sc.addPair(link)
 	scPLUS.addPair(link)
@@ -191,7 +191,7 @@ for u,v in itertools.combinations(obsnodes.keys(),2): #to predict new pair of no
 	else:
 		sc3.addPair(link)
 
-
+#Compute the number of link in the prediction period of the training phase
 nb_linksTRAININGC1,nb_linksTRAININGC2,nb_linksTRAININGC3=0,0,0
 for link in trainingtimes:
 	if link in sc1._pair_set:
@@ -204,7 +204,7 @@ for link in trainingtimes:
 sys.stdout.write("Nblinks TRAINING C1 "+str(nb_linksTRAININGC1)+"\n")
 sys.stdout.write("Nblinks TRAINING C2 "+str(nb_linksTRAININGC2)+"\n")
 sys.stdout.write("Nblinks TRAINING C3 "+str(nb_linksTRAININGC3)+"\n")
-
+#Compute metrics, do the integration, compute the maximum of each metric and normalize each metric  for each pair
 #ALL
 metrics.computeMetrics(sc,tstartobsT,tendobsT,obstimes,obsnodes) #compute all metrics
 sc.integrateMetrics(tstartpredT,tendpredT) #integrate metrics
@@ -235,7 +235,8 @@ scPLUS.integrateMetrics(tstartpredT,tendpredT) #integrate metrics
 scPLUS.setMaxByMetric()
 scPLUS.normalizeMetrics()
 
-#extrapolate the activity as constant
+#extrapolate the activity
+
 # n=metrics.linearActivityExtrapolation(nb_linksOBS,tstartobsT,tendobsT,tstartpredT,tendpredT)
 #n=metrics.fitnPointrActivityExtrapolation(obstimes,tstart,tendobs,tmesure,tendtraining,30)
 # n=metrics.twopointrActivityExtrapolation(nb_linksOBS1,nb_linksOBS2,tstart,(tstart+tendobs)/2,tendobs,tmesure,tendtraining)
@@ -243,7 +244,7 @@ scPLUS.normalizeMetrics()
 n= nb_linksTRAINING
 sys.stdout.write("Nblinks predicted C0 "+str(n)+"\n")
 
-if OnePred:
+if OnePred: #Making one prediction using the parameters in the config file
 	sc.OnePred(tstartobsT,tendobsT,tstartpredT,tendpredT,n,obstimes,trainingtimesaggregated,metrics._confmetrics)
 
 
@@ -252,10 +253,10 @@ initconfmetrics = sc.randomExplo(tstartobsT,tendobsT,tstartpredT,tendpredT,n,tra
 initconfmetrics1,initconfmetrics2,initconfmetrics3 = scPLUS.randomExploPLUS(tstartobsT,tendobsT,tstartpredT,tendpredT,n,trainingtimesaggregated,metrics._confmetrics,REPNbstep,sc1,sc2,sc3)
 #
 
-sys.stdout.write("fin init "+str(initconfmetrics)+" \n")
-sys.stdout.write("fin init C1 "+str(initconfmetrics1)+" \n")
-sys.stdout.write("fin init C2"+str(initconfmetrics2)+" \n")
-sys.stdout.write("fin init C3"+str(initconfmetrics3)+" \n")
+sys.stdout.write("End init "+str(initconfmetrics)+" \n")
+sys.stdout.write("End init C1 "+str(initconfmetrics1)+" \n")
+sys.stdout.write("End init C2"+str(initconfmetrics2)+" \n")
+sys.stdout.write("End init C3"+str(initconfmetrics3)+" \n")
 
 derstep = 0.05
 sizelinexpstep = 0.05
@@ -274,6 +275,7 @@ if Extract: #extract the learing results
 	sc2.extractPrediction(ExtractDirectory+ "/ExtractPredC2")
 	sc3.extractPrediction(ExtractDirectory+ "/ExtractPredC3")
 
+#Compute the total number of link predicted in each classes in the final combination without classes
 
 nb_linksPredictedC01,nb_linksPredictedC02,nb_linksPredictedC03=0,0,0
 for link in sc._ranks:
@@ -289,6 +291,7 @@ sys.stdout.write("Nblinks predicted C01 "+str(nb_linksPredictedC01)+"\n")
 sys.stdout.write("Nblinks predicted C02 "+str(nb_linksPredictedC02)+"\n")
 sys.stdout.write("Nblinks predicted C03 "+str(nb_linksPredictedC03)+"\n")
 
+#Compute the total number of link predicted in each classes in the final combination with classes
 
 nb_linksPredictedC1,nb_linksPredictedC2,nb_linksPredictedC3=0,0,0
 for link in sc._ranks:
@@ -302,6 +305,7 @@ for link in sc._ranks:
 sys.stdout.write("Nblinks predicted C1 "+str(nb_linksPredictedC1)+"\n")
 sys.stdout.write("Nblinks predicted C2 "+str(nb_linksPredictedC2)+"\n")
 sys.stdout.write("Nblinks predicted C3 "+str(nb_linksPredictedC3)+"\n")
+#Compute and print the evaluation
 ev01 = evaluate()
 ev02 = evaluate()
 ev03 = evaluate()
@@ -333,12 +337,13 @@ sys.stdout.write("C3: \n")
 Finalscore3.printeval()
 
 
-sys.stdout.write("fin train "+str(predconfmetric)+" "+str(Finalscore._F)+"\n \n")
-sys.stdout.write("fin train C1 "+str(predconfmetric1)+" "+str(Finalscore1._F)+"\n \n")
-sys.stdout.write("fin train C2"+str(predconfmetric2)+" "+str(Finalscore2._F)+"\n \n")
-sys.stdout.write("fin train C3"+str(predconfmetric3)+" "+str(Finalscore3._F)+"\n \n")
+sys.stdout.write("End train "+str(predconfmetric)+" "+str(Finalscore._F)+"\n \n")
+sys.stdout.write("End train C1 "+str(predconfmetric1)+" "+str(Finalscore1._F)+"\n \n")
+sys.stdout.write("End train C2"+str(predconfmetric2)+" "+str(Finalscore2._F)+"\n \n")
+sys.stdout.write("End train C3"+str(predconfmetric3)+" "+str(Finalscore3._F)+"\n \n")
 
-#Fin Training Debut Prediction
+#End Training Start Prediction
+sys.stdout.write("PREDICTION\n")
 
 nb_linksOBS=0
 nb_linksOBS1=0
@@ -433,7 +438,6 @@ scPLUS._ranks=Mergeranks
 scPLUS.normalizeranksbyintegral(n)
 
 
-sys.stdout.write("PREDICTION\n")
 sys.stdout.write("Nblinks OBS "+str(nb_linksOBS)+"\n")
 sys.stdout.write("Nblinks PRED C0 "+str(nb_linksPRED)+"\n")
 nb_linksPREDC1,nb_linksPREDC2,nb_linksPREDC3=0,0,0
@@ -459,7 +463,6 @@ for link in sc._ranks:
 	elif link in sc3._pair_set:
 		nb_linksPredictedC03 += sc._ranks[link]
 
-#print("Activity predicted : "+str(float(n)/(tendpred-tstartpred)))
 sys.stdout.write("Nblinks predicted C0 "+str(n)+"\n")
 sys.stdout.write("Nblinks predicted C01 "+str(nb_linksPredictedC01)+"\n")
 sys.stdout.write("Nblinks predicted C02 "+str(nb_linksPredictedC02)+"\n")

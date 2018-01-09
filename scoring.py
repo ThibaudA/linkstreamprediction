@@ -59,7 +59,7 @@ class score:
                 sys.stderr.write("Warning: Max "+ID+"=0 \n")
 
 
-    def normalizeranksbyintegral(self,linksinT):
+    def normalizeranksbyintegral(self,linksinT): #allocate the link using the values of sc._ranks and the global activty extrapolation
         sumarea=0.
         for r in self._ranks: #nb of link for each unit of area (from integrate)
             sumarea= sumarea+self._ranks[r]
@@ -73,7 +73,6 @@ class score:
             self._ranks[r]=self._ranks[r]*linkbyarea
 
     def rankPairs(self,t1,t2,confmetrics):
-        #print self._pair
         #combine the scores with parameters in confmetrics
         for c in self._pair:
             self._ranks[c] = 0
@@ -85,6 +84,7 @@ class score:
 
 
     def gridsearch(self,tstart,tend,tmesure,tendtraining,nb_links,trainingtimes,confmetrics):
+        #Initialisation by computing avery combination of the metrics parameters in the configfile.
         MFscore=-1.
         #ready to check various combinaison
         nbcalcul=len(list(itertools.product(*confmetrics.values())))
@@ -117,6 +117,8 @@ class score:
         return initconfmetrics
 
     def gridsearchPLUS(self,tstart,tend,tmesure,tendtraining,nb_links,trainingtimes,confmetrics,sc1,sc2,sc3):
+        #Initialisation by computing avery combination of the metrics parameters in the configfile.
+
         MFscore=-1.
         #ready to check various combinaison
         nbcalcul=len(list(itertools.product(*confmetrics.values())))
@@ -151,6 +153,7 @@ class score:
         return initconfmetrics
 
     def randomExplo(self,tstart,tend,tmesure,tendtraining,nb_links,trainingtimes,confmetrics,nb_iter):
+        #Random exploration of the parameter space between the two values given for each metric in the config file (without classes)
         MFscore=-1.
 
         cptcalcul = 0
@@ -184,6 +187,8 @@ class score:
         return initconfmetrics
 
     def randomExploPLUS(self,tstart,tend,tmesure,tendtraining,nb_links,trainingtimes,confmetrics,nb_iter,sc1,sc2,sc3):
+        #Random exploration of the parameter space between the two values given for each metric in the config file (with classes)
+
         MFscore=-1.
 
         cptcalcul = 0
@@ -242,6 +247,8 @@ class score:
         return initconfmetrics1,initconfmetrics2,initconfmetrics3
 
     def gradDescent(self,tstart,tend,tpred,T,nb_links,testtimes,init,derstep,step):
+        #Gradient descent without classes
+
         self.rankPairs(tpred,tpred+T,init) #initate (maybe not needed?)
         n=self.normalizeranksbyintegral(nb_links,tend,tstart)
         ev = evaluate()
@@ -286,6 +293,8 @@ class score:
 
 
     def gradDescentLinExp(self,tstart,tend,tmesure,tendtraining,nb_links,trainingtimes,init,derstep,sizelinexptep,numlinexptep,GDMaxstep):
+        #Gradient descent without classes
+
         self.rankPairs(tmesure,tendtraining,init)
         self.normalizeranksbyintegral(nb_links)
         ev = evaluate()
@@ -370,6 +379,8 @@ class score:
 
 
     def gradDescentLinExpPLUS(self,tstart,tend,tmesure,tendtraining,nb_links,trainingtimes,init1,init2,init3,derstep,sizelinexptep,numlinexptep,maxstep,sc1,sc2,sc3):
+        #Gradient descent witho classes
+
         sc1.rankPairs(tmesure,tendtraining,init1)
         sc2.rankPairs(tmesure,tendtraining,init2)
         sc2.rankPairs(tmesure,tendtraining,init3)
@@ -679,7 +690,7 @@ class score:
         plt.show()
 
     def correlationMatrix(self,confmetrics):
-        #une ligne une metrique
+        #line = metrique
         value = []
         label=[]
         i=0
@@ -733,7 +744,6 @@ class score:
         sys.exit()
 
     def extractMetric(self,confmetrics,filename):
-        #une ligne une metrique
 
         metrictable = open(filename, 'w')
         metrictable.write("u ")
@@ -792,7 +802,6 @@ class score:
         table.close()
 
     def extractPrediction(self,filename):
-        #une ligne une metrique
 
         table = open(filename, 'w')
         for c in self._ranks:
@@ -804,7 +813,6 @@ class score:
 
     @staticmethod
     def extractTime(times,filename):
-        #une ligne une metrique
 
         table = open(filename, 'w')
         for c in times:
