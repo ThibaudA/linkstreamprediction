@@ -78,7 +78,7 @@ while line.rstrip("\n") !="Commentaries:":   #Other Options
 			os.stat(dir)
 		except:
 			os.mkdir(dir)
-	if line.split(" ")[0].rstrip("\n") == "Onepred": #One prediction with given parameters
+	if line.split(" ")[0].rstrip("\n") == "OnePred": #One prediction with given parameters
 		OnePred=True
 
 
@@ -337,10 +337,10 @@ sys.stdout.write("C3: \n")
 Finalscore3.printeval()
 
 
-sys.stdout.write("End train "+str(predconfmetric)+" "+str(Finalscore._F)+"\n \n")
-sys.stdout.write("End train C1 "+str(predconfmetric1)+" "+str(Finalscore1._F)+"\n \n")
-sys.stdout.write("End train C2"+str(predconfmetric2)+" "+str(Finalscore2._F)+"\n \n")
-sys.stdout.write("End train C3"+str(predconfmetric3)+" "+str(Finalscore3._F)+"\n \n")
+sys.stdout.write("End train "+str(predconfmetric)+" "+str(Finalscore._F)+"\n")
+sys.stdout.write("End train C1 "+str(predconfmetric1)+" "+str(Finalscore1._F)+"\n")
+sys.stdout.write("End train C2"+str(predconfmetric2)+" "+str(Finalscore2._F)+"\n")
+sys.stdout.write("End train C3"+str(predconfmetric3)+" "+str(Finalscore3._F)+"\n")
 
 #End Training Start Prediction
 sys.stdout.write("PREDICTION\n")
