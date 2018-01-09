@@ -33,7 +33,7 @@ class metrics:
                         sc.addFunction(link,metricsname,self.benchMarkReduxNbLinks(times[link],t,len(times[link])))
 
             elif metricsname[:23] == "benchMarkReduxTimeInter":
-                n=int(metricsname[23:])
+                n=float(metricsname[23:])
                 for link in sc._pair:
                     u,v=link
                     if link not in times:

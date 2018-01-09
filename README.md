@@ -33,9 +33,7 @@ Prediction with and without classes
 
 ### Data structure
 
-Undirected link stream
-
-Format:
+Undirected link stream, sequence of triplet:
 
 ```
 t u v
@@ -65,6 +63,7 @@ Metrics #Metrics used:
 Metric1 [parameters]
 Metric2 [parameters]
 Metric3 [parameters]
+...
 EndMetrics
 [Options]
 Commentaries:
@@ -84,22 +83,22 @@ weightedAdamicAdar
 sorensenIndex
 weightedSorensenIndex
 benchMarkReduxNbLinks<int:k>
-benchMarkReduxTimeInter<int:k>"
+benchMarkReduxTimeInter<float:k>"
 ```
 
-parameters: (int),(int)
+parameters: <float>,<float>
 
 ## Output:
 
 By default the algorithm output the prediction quality and the metric combination used by during the prediction by classes.
-The list of predicted links can be extracted via the "Extract" option (see below)
+The list of predicted activities can be extracted via the "Extract" option (see below)
 
 ## Other settings:
 
 * Prediction extraction (In configuration file : [Option] = Extract \<directory\>)
 * Number of step during random exploration (Variables: RENbstep and REPNbstep)
 * Max number of step during gradient descent (Variables: GDMaxstep and GDPMaxstep)
-* Fine tuning of gradient descent (derstep, sizelinexptep and numlinexptep )
+* Fine tuning of gradient descent (Variables: derstep, sizelinexptep and numlinexptep )
 * One step prediction using the the parameters indicated in the configuration file for each metric (In config file : [Option] = Onepred)
 
 
