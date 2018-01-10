@@ -252,7 +252,6 @@ scPLUS.normalizeMetrics()
 # n=metrics.twopointrActivityExtrapolation(nb_linksOBS1,nb_linksOBS2,tstart,(tstart+tendobs)/2,tendobs,tmesure,tendtraining)
 #Triche
 n= nb_linksTRAINING
-sys.stdout.write("Nblinks predicted C0 "+str(n)+"\n")
 
 if OnePred: #Making one prediction using the parameters in the config file
 	sc.OnePred(tstartobsT,tendobsT,tstartpredT,tendpredT,n,obstimes,trainingtimesaggregated,metrics._confmetrics)

@@ -82,7 +82,7 @@ weightedAdamicAdar
 sorensenIndex
 weightedSorensenIndex
 PairActivityExtrapolationNbLinks<int:k>
-PairActivityExtrapolationTimeInter<float:k>"
+PairActivityExtrapolationTimeInter<float:k>
 ```
 
 parameters: <float>,<float>
@@ -90,6 +90,7 @@ parameters: <float>,<float>
 ## Output:
 
 By default the algorithm output the prediction quality and the metric combination used by during the prediction by classes.
+
 The list of predicted activities can be extracted via the "Extract" option (see below)
 
 ## Other settings:
