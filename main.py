@@ -14,26 +14,36 @@ predtimes=dict() #Links Pred
 metrics= metrics()
 Extract = False
 OnePred = False
-#Maximum/number of step of random explo and gradient descent
+#Number of step of random explo without classes
 RENbstep =10
+#Number of step of random explo with classes
 REPNbstep=10
+#Maximum number of step during gradient descent without classes
 GDMaxstep=10
+#Maximum number of step during gradient descent with classes
 GDPMaxstep=10
+#Gradient descent parameters
+#derivation step
+derstep = 0.05
+#lenght of a step during exploration of parameter space
+sizelinexpstep = 0.05
+#Number of step in the same direction
+numlinexpstep = 100
 if len(sys.argv)!=2:
 	sys.stderr.write("0  #start time of TrainingObservation\n")
 	sys.stderr.write("100 #end time of TrainingObservation\n")
 
-	sys.stderr.write("50 #start time of TrainingPrediction\n")
-	sys.stderr.write("100 #end time of TrainingPrediction\n")
+	sys.stderr.write("100 #start time of TrainingPrediction\n")
+	sys.stderr.write("150 #end time of TrainingPrediction\n")
 
-	sys.stderr.write("50  #start time of Observation\n")
-	sys.stderr.write("100 #end time of Observation\n")
+	sys.stderr.write("100  #start time of Observation\n")
+	sys.stderr.write("150 #end time of Observation\n")
 
-	sys.stderr.write("100 #start time of Prediction\n")
-	sys.stderr.write("150 #end time of Prediction\n")
+	sys.stderr.write("150 #start time of Prediction\n")
+	sys.stderr.write("200 #end time of Prediction\n")
 
 	sys.stderr.write("Metrics #Metrics used\n")
-	sys.stderr.write("intercontactTimes\n")
+	sys.stderr.write("PairActivityExtrapolation\n")
 	sys.stderr.write("commonNeighbors\n")
 	sys.stderr.write("EndMetrics\n")
 
@@ -258,9 +268,7 @@ sys.stdout.write("End init C1 "+str(initconfmetrics1)+" \n")
 sys.stdout.write("End init C2"+str(initconfmetrics2)+" \n")
 sys.stdout.write("End init C3"+str(initconfmetrics3)+" \n")
 
-derstep = 0.05
-sizelinexpstep = 0.05
-numlinexpstep = 100
+
 #perform gradient descent to better tune the parameters
 
 predconfmetric, Finalscore =sc.gradDescentLinExp(tstartobsT,tendobsT,tstartpredT,tendpredT,n,trainingtimesaggregated,initconfmetrics,derstep,sizelinexpstep,numlinexpstep,GDMaxstep)
@@ -327,7 +335,7 @@ sys.stdout.write("C0_2: \n")
 ev02.printeval()
 sys.stdout.write("C0_3: \n")
 ev03.printeval()
-sys.stdout.write("CPLUS: \n")
+sys.stdout.write("C123: \n")
 FinalscorePLUS.printeval()
 sys.stdout.write("C1: \n")
 Finalscore1.printeval()
@@ -543,7 +551,7 @@ ev03.printeval()
 
 evPLUS = evaluate()
 evPLUS.calculateScore(scPLUS._ranks,predtimes)
-sys.stdout.write("CPLUS:\n")
+sys.stdout.write("C123:\n")
 evPLUS.printeval()
 
 ev1 = evaluate()

@@ -16,31 +16,31 @@ class metrics:
         # score, observation start time, observation end time, dict with the time of links for each pairs, dict with the neighbors of each nodes
         for metricsname in self._confmetrics: #launch each metrics in confmetrics
 
-            if metricsname == "benchMark":
+            if metricsname == "PairActivityExtrapolation":
                 for link in sc._pair:
                     u,v=link
                     if link in times:
-                        sc.addFunction(link,"benchMark",self.benchMark(times[link]))
+                        sc.addFunction(link,"benchMark",self.PairActivityExtrapolation(times[link]))
 
-            elif metricsname[:21] == "benchMarkReduxNbLinks":
+            elif metricsname[:21] == "PairActivityExtrapolationNbLinks":
                 n=int(metricsname[21:])
                 for link in sc._pair:
                     u,v=link
                     if link not in times:
                         continue
                     if len(times[link]) > n:
-                        sc.addFunction(link,metricsname,self.benchMarkReduxNbLinks(times[link],tend,n))
+                        sc.addFunction(link,metricsname,self.PairActivityExtrapolationNbLinks(times[link],tend,n))
                     elif len(times[link]) > 1:
-                        sc.addFunction(link,metricsname,self.benchMarkReduxNbLinks(times[link],tend,len(times[link])))
+                        sc.addFunction(link,metricsname,self.PairActivityExtrapolationNbLinks(times[link],tend,len(times[link])))
 
-            elif metricsname[:23] == "benchMarkReduxTimeInter":
+            elif metricsname[:23] == "PairActivityExtrapolationTimeInter":
                 n=float(metricsname[23:])
                 for link in sc._pair:
                     u,v=link
                     if link not in times:
                         continue
                     if len(times[link]) > 0:
-                        sc.addFunction(link,metricsname,self.benchMarkReduxTimeInter(times[link],tend,n))
+                        sc.addFunction(link,metricsname,self.PairActivityExtrapolationTimeInter(times[link],tend,n))
 
             elif metricsname== "twopointExtrapolation":
                 for link in sc._pair:
@@ -150,17 +150,17 @@ class metrics:
 
 
 
-    def benchMark(self,time):
+    def PairActivityExtrapolation(self,time):
         s = len(time)
         return lambda t: s
 
-    def benchMarkReduxNbLinks(self,time,t,n):
+    def PairActivityExtrapolationNbLinks(self,time,t,n):
         #n= number of link
         s = len(time[-n:])/(float(t-time[-n]))
 
         return lambda t: s
 
-    def benchMarkReduxTimeInter(self,time,t,n):
+    def PairActivityExtrapolationTimeInter(self,time,t,n):
         # counts the links betwenn n and t
 
         nlinks=len([x for x in time if x>t-n and x<=t])
@@ -293,7 +293,7 @@ class metrics:
     #same ACTIVITY
     def linearActivityExtrapolation(self,nb_lines,tstart,tmesure,tstartpred,tendpred):
         return float(nb_lines)*(tendpred-tstartpred)/float(tmesure-tstart)
-        
+
     #extrapolate ACTIVITY with obs and training
     def twopointrActivityExtrapolation(self,nb_linksOBS,nb_linksTRAINING,tstart,tmesure,tendtraining,tstartpred,tendpred):
         a=2*(nb_linksTRAINING/(tendtraining-tmesure)-nb_linksOBS/(tmesure-tstart))/(tendtraining-tstart)
