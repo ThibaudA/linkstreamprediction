@@ -186,65 +186,134 @@ class score:
                 initconfmetrics[metric]=0
         return initconfmetrics
 
-    def randomExploPLUS(self,tstart,tend,tmesure,tendtraining,nb_links,trainingtimes,confmetrics,nb_iter,sc1,sc2,sc3):
+    # def randomExploPLUS(self,tstart,tend,tmesure,tendtraining,nb_links,trainingtimes,confmetrics,nb_iter,sc1,sc2,sc3):
+    #     #Random exploration of the parameter space between the two values given for each metric in the config file (with classes)
+    #
+    #     MFscore=-1.
+    #
+    #     cptcalcul = 0
+    #     for i in range(nb_iter): #check all combinaison of parameters
+    #         runmetrics1={metric:random.random()*(confmetrics[metric][1]-confmetrics[metric][0])+confmetrics[metric][0] for metric in confmetrics}
+    #         runmetrics2={metric:random.random()*(confmetrics[metric][1]-confmetrics[metric][0])+confmetrics[metric][0] for metric in confmetrics}
+    #         runmetrics3={metric:random.random()*(confmetrics[metric][1]-confmetrics[metric][0])+confmetrics[metric][0] for metric in confmetrics}
+    #         allnull = True
+    #         for metric in runmetrics1:
+    #             if runmetrics1[metric]!=0:#avoid all null set of parameters
+    #                 allnull = False
+    #         for metric in runmetrics2:
+    #             if runmetrics2[metric]!=0:#avoid all null set of parameters
+    #                 allnull = False
+    #         for metric in runmetrics3:
+    #             if runmetrics3[metric]!=0:#avoid all null set of parameters
+    #                 allnull = False
+    #         cptcalcul +=1
+    #         if cptcalcul%200 == 0:
+    #             sys.stderr.write(str(cptcalcul)+ "/"+str(nb_iter)+ " \n")
+    #
+    #
+    #         if not allnull:
+    #
+    #             sc1.rankPairs(tstart,tend,runmetrics1) #compute combinaison
+    #             sc2.rankPairs(tstart,tend,runmetrics2) #compute combinaison
+    #             sc3.rankPairs(tstart,tend,runmetrics3) #compute combinaison
+    #             Mergeranks=sc1._ranks.copy()
+    #             Mergeranks.update(sc2._ranks)
+    #             Mergeranks.update(sc3._ranks)
+    #             self._ranks=Mergeranks
+    #             self.normalizeranksbyintegral(nb_links) #dispach n link using the score computed
+    #
+    #             ev1 = evaluate()
+    #             ev2 = evaluate()
+    #             ev3 = evaluate()
+    #             ev1.calculateScoreFromTimeAggreg({x:self._ranks[x] for x in sc1._ranks},trainingtimes)
+    #             ev2.calculateScoreFromTimeAggreg({x:self._ranks[x] for x in sc2._ranks},trainingtimes)
+    #             ev3.calculateScoreFromTimeAggreg({x:self._ranks[x] for x in sc3._ranks},trainingtimes)
+    #             meanF = meanFscore(ev1._F,ev2._F,ev3._F)
+    #
+    #             if meanF >= MFscore:
+    #                 MFscore = meanF
+    #                 initconfmetrics1 = runmetrics1 #take the best set
+    #                 initconfmetrics2 = runmetrics2 #take the best set
+    #                 initconfmetrics3 = runmetrics3 #take the best set
+    #
+    #     for metric in initconfmetrics1:
+    #         if metric not in sc1._maxByMetric or sc1._maxByMetric[metric]==0:
+    #             initconfmetrics1[metric]=0
+    #         if metric not in sc2._maxByMetric or sc2._maxByMetric[metric]==0:
+    #             initconfmetrics2[metric]=0
+    #         if metric not in sc3._maxByMetric or sc3._maxByMetric[metric]==0:
+    #             initconfmetrics3[metric]=0
+    #
+    #     return initconfmetrics1,initconfmetrics2,initconfmetrics3
+
+    @staticmethod
+    def randomExploClasses(tstart,tend,tmesure,tendtraining,nb_links,trainingtimes,confmetrics,nb_iter,pairclasses):
         #Random exploration of the parameter space between the two values given for each metric in the config file (with classes)
-
+        listscores=pairclasses._classscore
         MFscore=-1.
-
+        initconfmetrics=dict()
         cptcalcul = 0
         for i in range(nb_iter): #check all combinaison of parameters
-            runmetrics1={metric:random.random()*(confmetrics[metric][1]-confmetrics[metric][0])+confmetrics[metric][0] for metric in confmetrics}
-            runmetrics2={metric:random.random()*(confmetrics[metric][1]-confmetrics[metric][0])+confmetrics[metric][0] for metric in confmetrics}
-            runmetrics3={metric:random.random()*(confmetrics[metric][1]-confmetrics[metric][0])+confmetrics[metric][0] for metric in confmetrics}
+            runmetrics=dict()
+            for sc in listscores.keys():
+                runmetrics[sc]={metric:random.random()*(confmetrics[metric][1]-confmetrics[metric][0])+confmetrics[metric][0] for metric in confmetrics}
+
             allnull = True
-            for metric in runmetrics1:
-                if runmetrics1[metric]!=0:#avoid all null set of parameters
-                    allnull = False
-            for metric in runmetrics2:
-                if runmetrics2[metric]!=0:#avoid all null set of parameters
-                    allnull = False
-            for metric in runmetrics3:
-                if runmetrics3[metric]!=0:#avoid all null set of parameters
-                    allnull = False
+            for sc in listscores.keys():
+                for metric in runmetrics[sc]:
+                    if runmetrics[sc][metric]!=0:#avoid all null set of parameters
+                        allnull = False
             cptcalcul +=1
             if cptcalcul%200 == 0:
                 sys.stderr.write(str(cptcalcul)+ "/"+str(nb_iter)+ " \n")
 
 
             if not allnull:
+                for sc in listscores.keys():
+                    listscores[sc].rankPairs(tstart,tend,runmetrics[sc]) #compute combinaison
 
-                sc1.rankPairs(tstart,tend,runmetrics1) #compute combinaison
-                sc2.rankPairs(tstart,tend,runmetrics2) #compute combinaison
-                sc3.rankPairs(tstart,tend,runmetrics3) #compute combinaison
-                Mergeranks=sc1._ranks.copy()
-                Mergeranks.update(sc2._ranks)
-                Mergeranks.update(sc3._ranks)
-                self._ranks=Mergeranks
-                self.normalizeranksbyintegral(nb_links) #dispach n link using the score computed
+                Mergeranks=dict()
+                for sc in listscores.keys():
+                    Mergeranks.update(listscores[sc]._ranks.copy())
+                pairclasses._classUnion._ranks=Mergeranks
+                pairclasses._classUnion.normalizeranksbyintegral(nb_links) #dispach n link using the score computed
+                ev=dict()
+                for sc in listscores.keys():
+                    ev[sc] = evaluate()
+                    ev[sc].calculateScoreFromTimeAggreg({x:pairclasses._classUnion._ranks[x] for x in listscores[sc]._ranks},trainingtimes)
 
-                ev1 = evaluate()
-                ev2 = evaluate()
-                ev3 = evaluate()
-                ev1.calculateScoreFromTimeAggreg({x:self._ranks[x] for x in sc1._ranks},trainingtimes)
-                ev2.calculateScoreFromTimeAggreg({x:self._ranks[x] for x in sc2._ranks},trainingtimes)
-                ev3.calculateScoreFromTimeAggreg({x:self._ranks[x] for x in sc3._ranks},trainingtimes)
-                meanF = meanFscore(ev1._F,ev2._F,ev3._F)
+                meanF = meanFscoredict(ev)
 
                 if meanF >= MFscore:
                     MFscore = meanF
-                    initconfmetrics1 = runmetrics1 #take the best set
-                    initconfmetrics2 = runmetrics2 #take the best set
-                    initconfmetrics3 = runmetrics3 #take the best set
+                    for sc in listscores:
+                        initconfmetrics[sc] = runmetrics[sc] #take the best set
 
-        for metric in initconfmetrics1:
-            if metric not in sc1._maxByMetric or sc1._maxByMetric[metric]==0:
-                initconfmetrics1[metric]=0
-            if metric not in sc2._maxByMetric or sc2._maxByMetric[metric]==0:
-                initconfmetrics2[metric]=0
-            if metric not in sc3._maxByMetric or sc3._maxByMetric[metric]==0:
-                initconfmetrics3[metric]=0
+        for metric in confmetrics:
+            for sc in listscores:
+                if metric not in listscores[sc]._maxByMetric or listscores[sc]._maxByMetric[metric]==0:
+                    initconfmetrics[sc][metric]=0
 
-        return initconfmetrics1,initconfmetrics2,initconfmetrics3
+        return initconfmetrics
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     def gradDescent(self,tstart,tend,tpred,T,nb_links,testtimes,init,derstep,step):
         #Gradient descent without classes
@@ -549,7 +618,7 @@ class score:
 
 
             maxev=evaluate()
-            maxev._F=0
+            maxF=0
             maxindex=0
             for j in range(numlinexptep):
                 #a step in the direction
@@ -581,7 +650,7 @@ class score:
                 ev2.calculateScoreFromTimeAggreg({x:self._ranks[x] for x in sc2._ranks},trainingtimes)
                 ev3.calculateScoreFromTimeAggreg({x:self._ranks[x] for x in sc3._ranks},trainingtimes)
                 meanF = meanFscore(ev1._F,ev2._F,ev3._F)
-                if math.floor(meanF*100000)/100000  > math.floor(maxev._F*100000)/100000:
+                if math.floor(meanF*100000)/100000  > math.floor(maxF*100000)/100000:
                     maxev=ev
                     maxconfmetrics1= {metric:iterconfmetrics1[metric] for metric in confmetrics1}
                     maxconfmetrics2= {metric:iterconfmetrics2[metric] for metric in confmetrics2}
@@ -638,6 +707,182 @@ class score:
             sys.stderr.write("WARNING: Nb max interation\n")
         return confmetrics1,confmetrics2,confmetrics3,maxev,maxev1,maxev2,maxev3
 
+
+#
+#
+#
+#
+#
+#
+#
+#
+
+
+
+    @staticmethod
+    def gradDescentLinExpClasses(tstart,tend,tmesure,tendtraining,nb_links,trainingtimes,init,derstep,sizelinexptep,numlinexptep,maxstep,pairclasses):
+        #Gradient descent witho classes
+        for sc in pairclasses._classscore:
+            pairclasses._classscore[sc].rankPairs(tmesure,tendtraining,init[sc])
+
+        Mergeranks=dict()
+        for sc in pairclasses._classscore.keys():
+            Mergeranks.update(pairclasses._classscore[sc]._ranks.copy())
+
+        pairclasses._classUnion._ranks=Mergeranks
+        pairclasses._classUnion.normalizeranksbyintegral(nb_links)
+
+        ev = evaluate()
+        ev.calculateScoreFromTimeAggreg(pairclasses._classUnion._ranks,trainingtimes)
+
+
+        confmetrics = dict()
+        derivconfmetrics = dict()
+        iterconfmetrics = dict()
+        directmetrics = dict()
+
+
+        for sc in pairclasses._classscore:
+            confmetrics[sc]=init[sc].copy()
+            derivconfmetrics[sc] = init[sc].copy()
+            iterconfmetrics[sc] = init[sc].copy()
+            directmetrics[sc] = dict.fromkeys(init[sc])
+
+
+        maxindex=-1
+        k=0
+        maxconfmetrics=dict()
+        while maxindex!=0 and k <maxstep: #no change or 100 step
+            if k%2 == 0:
+                sys.stderr.write(str(k)+ "/"+str(maxstep)+ " \n")
+
+            for sc in pairclasses._classscore:
+                for metric in confmetrics[sc]:
+                    #compute the gradient
+                    derivconfmetrics[sc][metric] = confmetrics[sc][metric] + derstep
+                    for classID in pairclasses._classscore:
+                        pairclasses._classscore[classID].rankPairs(tmesure,tendtraining,derivconfmetrics[classID])
+                    Mergeranks=dict()
+                    for classID in pairclasses._classscore.keys():
+                        Mergeranks.update(pairclasses._classscore[classID]._ranks.copy())
+                    pairclasses._classUnion._ranks=Mergeranks
+                    pairclasses._classUnion.normalizeranksbyintegral(nb_links)
+
+                    ev=dict()
+                    for classID in pairclasses._classscore.keys():
+                        ev[sc] = evaluate()
+                        ev[sc].calculateScoreFromTimeAggreg({x:pairclasses._classUnion._ranks[x] for x in pairclasses._classscore[classID]._ranks},trainingtimes)
+
+                    meanF = meanFscoredict(ev)
+
+                    Fplus=meanF
+
+                    #no negative parameters
+                    if confmetrics[sc][metric] - derstep >= 0:
+                        derivconfmetrics[sc][metric] = confmetrics[sc][metric] - derstep
+                    else:
+                        derivconfmetrics[sc][metric]=0.0
+
+                    for classID in pairclasses._classscore:
+                        pairclasses._classscore[classID].rankPairs(tmesure,tendtraining,derivconfmetrics[classID])
+                    Mergeranks=dict()
+                    for classID in pairclasses._classscore.keys():
+                        Mergeranks.update(pairclasses._classscore[classID]._ranks.copy())
+                    pairclasses._classUnion._ranks=Mergeranks
+                    pairclasses._classUnion.normalizeranksbyintegral(nb_links)
+
+                    ev=dict()
+                    for classID in pairclasses._classscore.keys():
+                        ev[classID] = evaluate()
+                        ev[classID].calculateScoreFromTimeAggreg({x:pairclasses._classUnion._ranks[x] for x in pairclasses._classscore[classID]._ranks},trainingtimes)
+
+                    meanF = meanFscoredict(ev)
+
+                    Fminus=meanF
+                    #maybe check when parameters<0
+                    # for sc in pairclasses._classscore:
+                    directmetrics[sc][metric] = (Fplus-Fminus)/(float(derstep)+float(min(confmetrics[sc][metric],derstep)))
+                    derivconfmetrics[sc] = confmetrics[sc].copy()
+
+            maxev=dict()
+            maxF=0
+            maxindex=0
+            for j in range(numlinexptep):
+                #a step in the direction
+                for sc in pairclasses._classscore:
+                    # print(directmetrics[sc])
+                    iterconfmetrics[sc]={metric:confmetrics[sc][metric]+(j)*sizelinexptep*directmetrics[sc][metric] for metric in confmetrics[sc]}
+                    for metric in iterconfmetrics[sc]:
+                        #if iterconfmetrics[metric] > 1:
+                        #    iterconfmetrics[metric]=1.0
+                        if iterconfmetrics[sc][metric] < 0:
+                            iterconfmetrics[sc][metric] = 0.0
+
+                for sc in pairclasses._classscore:
+                    pairclasses._classscore[sc].rankPairs(tmesure,tendtraining,iterconfmetrics[sc])
+                Mergeranks=dict()
+                for sc in pairclasses._classscore.keys():
+                    Mergeranks.update(pairclasses._classscore[sc]._ranks.copy())
+                pairclasses._classUnion._ranks=Mergeranks
+                pairclasses._classUnion.normalizeranksbyintegral(nb_links)
+
+
+                ev=dict()
+                for sc in pairclasses._classscore.keys():
+                    ev[sc] = evaluate()
+                    ev[sc].calculateScoreFromTimeAggreg({x:pairclasses._classUnion._ranks[x] for x in pairclasses._classscore[sc]._ranks},trainingtimes)
+
+                meanF = meanFscoredict(ev)
+
+
+                if math.floor(meanF*100000)/100000  > math.floor(maxF*100000)/100000:
+                    maxF=meanF
+                    for sc in pairclasses._classscore:
+                        maxconfmetrics[sc]= {metric:iterconfmetrics[sc][metric] for metric in confmetrics[sc]}
+
+                    maxindex=j
+                    ev=dict()
+                    for sc in pairclasses._classscore.keys():
+                        ev[sc] = evaluate()
+                        ev[sc].calculateScoreFromTimeAggreg({x:pairclasses._classUnion._ranks[x] for x in pairclasses._classscore[sc]._ranks},trainingtimes)
+                        maxev[sc] = ev[sc]
+
+                # sys.stderr.write(str(maxindex)+"\n")
+            for sc in pairclasses._classscore.keys():
+                confmetrics[sc]={metric:maxconfmetrics[sc][metric] for metric in confmetrics[sc]}
+                derivconfmetrics[sc] = confmetrics[sc].copy()
+
+            k=k+1
+        maxmetric=0
+
+        for sc in pairclasses._classscore.keys():
+            for metric in confmetrics[sc]:
+                if confmetrics[sc][metric] > maxmetric:
+                    maxmetric=confmetrics[sc][metric]
+        for sc in pairclasses._classscore.keys():
+            for metric in confmetrics[sc]:
+                confmetrics[sc][metric]=confmetrics[sc][metric]/maxmetric
+
+
+        for sc in pairclasses._classscore:
+            pairclasses._classscore[sc].rankPairs(tmesure,tendtraining,confmetrics[sc])
+        Mergeranks=dict()
+        for sc in pairclasses._classscore.keys():
+            Mergeranks.update(pairclasses._classscore[sc]._ranks.copy())
+        pairclasses._classUnion._ranks=Mergeranks
+        pairclasses._classUnion.normalizeranksbyintegral(nb_links)
+
+        evUnion=evaluate()
+        evUnion.calculateScoreFromTimeAggreg(pairclasses._classUnion._ranks,trainingtimes)
+
+        for link in pairclasses._classUnion._ranks:
+            for sc in pairclasses._classscore:
+                if link in pairclasses._classscore[sc]._pair_set:
+                    pairclasses._classscore[sc]._ranks[link] = pairclasses._classUnion._ranks[link]
+
+        if k== maxstep:
+            sys.stderr.write("WARNING: Nb max interation\n")
+        return confmetrics,evUnion,maxev
 
 
 
@@ -766,7 +1011,7 @@ class score:
         metrictable.close()
 
     @staticmethod
-    def extractCoef(init0,init1,init2,init3,filename):
+    def extractCoef(init0,initclasses,filename,classorder):
         #une ligne une metrique
 
         table = open(filename, 'w')
@@ -775,30 +1020,19 @@ class score:
         for ID in init0:
             s+=ID + " "
         table.write(s[:-1]+"\n")
-
         s=""
         table.write("C0 ")
         for ID in init0:
             s+=str(init0[ID]) + " "
         table.write(s[:-1]+"\n")
 
-        s=""
-        table.write("C1 ")
-        for ID in init0:
-            s+=str(init1[ID]) + " "
-        table.write(s[:-1]+"\n")
+        for classID in classorder:
+            s=""
+            table.write("classID ")
+            for ID in init0:
+                s+=str(initclasses[classID][ID]) + " "
+            table.write(s[:-1]+"\n")
 
-        s=""
-        table.write("C2 ")
-        for ID in init0:
-            s+=str(init2[ID]) + " "
-        table.write(s[:-1]+"\n")
-
-        s=""
-        table.write("C3 ")
-        for ID in init0:
-            s+=str(init3[ID]) + " "
-        table.write(s[:-1]+"\n")
         table.close()
 
     def extractPrediction(self,filename):
@@ -832,12 +1066,29 @@ class score:
 
 
 
-
-
-
-
 def meanFscore(x,y,z):
-    if x==0 or y==0 or z==0:
+    if x<=0 or y<=0 or z<=0:
         return 0
     else:
-        return (3)/(1/x+1/y+1/z)
+        return 3/(1/x+1/y+1/2)
+
+
+
+def meanFscoredict(X):
+    for x in X:
+        if X[x]._F<=0:
+            return 0
+    else:
+        s=0
+        for x in X:
+            s+= 1/X[x]._F
+        return (len(X.values()))/s
+
+
+
+
+
+
+
+
+#

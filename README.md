@@ -96,6 +96,8 @@ The list of predicted activities can be extracted via the "Extract" option (see 
 ## Other settings:
 
 * Prediction extraction (In configuration file : [Option] = Extract \<directory\>). Example and format in folder TestExtract
+* Classes by UPGMA, cut by inverse order of agregation (In configuration file : [Option] = UPGMAINV <int:nbCluster> <float:VandPparameter>)
+* Classes par UPGMA, cut by size (In configuration file : [Option] = UPGMASIZE <int:nbCluster> <float:VandPparameter>)
 * One step prediction using the the parameters indicated in the configuration file for each metric (In config file : [Option] = Onepred)
 
 

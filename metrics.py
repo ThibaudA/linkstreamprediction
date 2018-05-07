@@ -20,10 +20,10 @@ class metrics:
                 for link in sc._pair:
                     u,v=link
                     if link in times:
-                        sc.addFunction(link,"benchMark",self.PairActivityExtrapolation(times[link]))
+                        sc.addFunction(link,"PairActivityExtrapolation",self.PairActivityExtrapolation(times[link]))
 
-            elif metricsname[:21] == "PairActivityExtrapolationNbLinks":
-                n=int(metricsname[21:])
+            elif metricsname[:32] == "PairActivityExtrapolationNbLinks":
+                n=int(metricsname[32:])
                 for link in sc._pair:
                     u,v=link
                     if link not in times:
@@ -33,8 +33,8 @@ class metrics:
                     elif len(times[link]) > 1:
                         sc.addFunction(link,metricsname,self.PairActivityExtrapolationNbLinks(times[link],tend,len(times[link])))
 
-            elif metricsname[:23] == "PairActivityExtrapolationTimeInter":
-                n=float(metricsname[23:])
+            elif metricsname[:34] == "PairActivityExtrapolationTimeInter":
+                n=float(metricsname[34:])
                 for link in sc._pair:
                     u,v=link
                     if link not in times:
